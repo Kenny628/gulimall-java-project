@@ -1,0 +1,45 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "GulimallWareApplication",
+      "request": "launch",
+      "mainClass": "com._yzhheng.gulimallware.GulimallWareApplication",
+      "projectName": "gulimall-ware"
+    },
+    {
+      "type": "java",
+      "name": "GulimallSearchApplication",
+      "request": "launch",
+      "mainClass": "com._yzhheng.GulimallSearchApplication",
+      "projectName": "gulimall-search"
+    },
+    {
+      "type": "java",
+      "name": "GulimallGatewayApplication",
+      "request": "launch",
+      "mainClass": "com._yzhheng.gulimallgateway.GulimallGatewayApplication",
+      "projectName": "gulimall-gateway"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-SpringBootStarter<gulimall-product>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com._yzhheng.SpringBootStarter",
+      "projectName": "gulimall-product",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-SpringBootStarter<gulimall-ware>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com._yzhheng.SpringBootStarter",
+      "projectName": "gulimall-ware",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}
