@@ -4,36 +4,43 @@
  */
 package com._yzhheng.persistence.repositories;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import com._yzhheng.persistence.entities.PmsSkuImages;
 
 /**
- * Spring Data JPA repository for entity "PmsSkuImages" <br> 
+ * Spring Data JPA repository for entity "PmsSkuImages" <br>
  * 
  * This repository extends PagingAndSortingRepository interface <br>
  * so it provides by default all the basic CRUD operations : <br>
- *   findById, findAll, save, delete, etc <br> 
+ * findById, findAll, save, delete, etc <br>
  * with pagination and sorting : <br>
- *   findAll(Pageable), findAll(Sort)<br>
+ * findAll(Pageable), findAll(Sort)<br>
  * 
  * This repository can be extended by adding specific "finders" methods<br>
- * To do so, see the "predicates conventions" for "derived query methods" in Spring Data documentation
+ * To do so, see the "predicates conventions" for "derived query methods" in
+ * Spring Data documentation
  * 
  * @author Telosys
  *
  */
 public interface PmsSkuImagesRepository extends JpaRepository<PmsSkuImages, Long> {
 
-	// Insert specific finders here 
+	@Query(value = "Select * from pms_sku_images where sku_Id = :skuId", nativeQuery = true)
+	List<PmsSkuImages> getImagesBySkuId(Long skuId);
 
-	//List<PmsSkuImages> findByXxx(String xxx);
+	// Insert specific finders here
 
-	//List<PmsSkuImages> findByXxxStartingWith(String xxx);
+	// List<PmsSkuImages> findByXxx(String xxx);
 
-	//List<PmsSkuImages> findByXxxContaining(String xxx);
+	// List<PmsSkuImages> findByXxxStartingWith(String xxx);
 
-	//List<PmsSkuImages> findByYyy(BigDecimal yyy);
+	// List<PmsSkuImages> findByXxxContaining(String xxx);
 
-	//List<PmsSkuImages> findByXxxContainingAndYyy(String xxx, BigDecimal yyy);
+	// List<PmsSkuImages> findByYyy(BigDecimal yyy);
+
+	// List<PmsSkuImages> findByXxxContainingAndYyy(String xxx, BigDecimal yyy);
 }

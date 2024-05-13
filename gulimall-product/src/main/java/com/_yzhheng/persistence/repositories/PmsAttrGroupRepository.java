@@ -4,36 +4,42 @@
  */
 package com._yzhheng.persistence.repositories;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com._yzhheng.persistence.entities.PmsAttrGroup;
+import com._yzhheng.vo.SkuItemVo.SpuItemBaseAttrVo;
 
 /**
- * Spring Data JPA repository for entity "PmsAttrGroup" <br> 
+ * Spring Data JPA repository for entity "PmsAttrGroup" <br>
  * 
  * This repository extends PagingAndSortingRepository interface <br>
  * so it provides by default all the basic CRUD operations : <br>
- *   findById, findAll, save, delete, etc <br> 
+ * findById, findAll, save, delete, etc <br>
  * with pagination and sorting : <br>
- *   findAll(Pageable), findAll(Sort)<br>
+ * findAll(Pageable), findAll(Sort)<br>
  * 
  * This repository can be extended by adding specific "finders" methods<br>
- * To do so, see the "predicates conventions" for "derived query methods" in Spring Data documentation
+ * To do so, see the "predicates conventions" for "derived query methods" in
+ * Spring Data documentation
  * 
  * @author Telosys
  *
  */
 public interface PmsAttrGroupRepository extends JpaRepository<PmsAttrGroup, Long> {
 
-	// Insert specific finders here 
+	List<SpuItemBaseAttrVo> getAttrGroupWithAttrsBySpuId(Long spuId);
 
-	//List<PmsAttrGroup> findByXxx(String xxx);
+	// Insert specific finders here
 
-	//List<PmsAttrGroup> findByXxxStartingWith(String xxx);
+	// List<PmsAttrGroup> findByXxx(String xxx);
 
-	//List<PmsAttrGroup> findByXxxContaining(String xxx);
+	// List<PmsAttrGroup> findByXxxStartingWith(String xxx);
 
-	//List<PmsAttrGroup> findByYyy(BigDecimal yyy);
+	// List<PmsAttrGroup> findByXxxContaining(String xxx);
 
-	//List<PmsAttrGroup> findByXxxContainingAndYyy(String xxx, BigDecimal yyy);
+	// List<PmsAttrGroup> findByYyy(BigDecimal yyy);
+
+	// List<PmsAttrGroup> findByXxxContainingAndYyy(String xxx, BigDecimal yyy);
 }

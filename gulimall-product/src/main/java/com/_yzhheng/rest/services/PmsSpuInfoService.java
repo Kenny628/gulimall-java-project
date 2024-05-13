@@ -59,7 +59,7 @@ public class PmsSpuInfoService extends GenericService<PmsSpuInfo, PmsSpuInfoDTO>
 	WareFeign produtFeign;
 	@Autowired
 	SearchFeign searchFeign;
-	private PmsBrandService brandService;
+	private final PmsBrandService brandService;
 	private final PmsCategoryService categoryService;
 
 	/**

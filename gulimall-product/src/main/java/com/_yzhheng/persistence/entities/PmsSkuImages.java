@@ -17,51 +17,50 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name="pms_sku_images", catalog="gulimall-pms" )
+@Table(name = "pms_sku_images", catalog = "gulimall-pms")
 public class PmsSkuImages implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    //--- PRIMARY KEY 
-    @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(name="id", nullable=false)
-    private Long       id ;
+  // --- PRIMARY KEY
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  @Column(name = "id", nullable = false)
+  private Long id;
 
-    //--- OTHER DATA FIELDS 
-    @Column(name="sku_id")
-    private Long       skuId ;
+  // --- OTHER DATA FIELDS
+  @Column(name = "sku_id")
+  private Long skuId;
 
-    @Column(name="img_url", length=255)
-    private String     imgUrl ;
+  @Column(name = "img_url", length = 255)
+  private String imgUrl;
 
-    @Column(name="img_sort")
-    private Integer    imgSort ;
+  @Column(name = "img_sort")
+  private Integer imgSort;
 
-    @Column(name="default_img")
-    private Integer    defaultImg ;
+  @Column(name = "default_img")
+  private Integer defaultImg;
 
-    /**
-     * Constructor
-     */
-    public PmsSkuImages() {
-		super();
-    }
-  
-	@Override
- public String toString() { 
-  StringBuilder sb = new StringBuilder(); 
-  sb.append(id);
-  sb.append("|");
-  sb.append(skuId);
-  sb.append("|");
-  sb.append(imgUrl);
-  sb.append("|");
-  sb.append(imgSort);
-  sb.append("|");
-  sb.append(defaultImg);
-  return sb.toString(); 
- } 
+  /**
+   * Constructor
+   */
+  public PmsSkuImages() {
+    super();
+  }
 
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(id);
+    sb.append("|");
+    sb.append(skuId);
+    sb.append("|");
+    sb.append(imgUrl);
+    sb.append("|");
+    sb.append(imgSort);
+    sb.append("|");
+    sb.append(defaultImg);
+    return sb.toString();
+  }
 
 }

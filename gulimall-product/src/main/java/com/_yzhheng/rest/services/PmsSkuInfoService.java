@@ -7,20 +7,27 @@ package com._yzhheng.rest.services;
 import java.util.List;
 import java.util.Optional;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com._yzhheng.persistence.entities.PmsSkuImages;
 import com._yzhheng.persistence.entities.PmsSkuInfo;
+import com._yzhheng.persistence.entities.PmsSpuInfoDesc;
+import com._yzhheng.persistence.repositories.PmsAttrGroupRepository;
+import com._yzhheng.persistence.repositories.PmsSkuImagesRepository;
 import com._yzhheng.persistence.repositories.PmsSkuInfoRepository;
+import com._yzhheng.persistence.repositories.PmsSpuInfoDescRepository;
 import com._yzhheng.rest.dto.PmsSkuInfoDTO;
 import com._yzhheng.rest.services.commons.GenericService;
+import com._yzhheng.vo.SkuItemVo;
+import com._yzhheng.vo.SkuItemVo.SpuItemBaseAttrVo;
 
 /**
  * REST service for entity "PmsSkuInfo" <br>
  * 
- * This service provides all the necessary operations required by the REST controller <br>
+ * This service provides all the necessary operations required by the REST
+ * controller <br>
  * 
  * @author Telosys
  *
@@ -32,16 +39,25 @@ public class PmsSkuInfoService extends GenericService<PmsSkuInfo, PmsSkuInfoDTO>
 
 	private final PmsSkuInfoRepository repository; // injected by constructor
 
+	private final PmsSkuImagesRepository SkuImageRepo;
+
+	private final PmsSpuInfoDescRepository SpuInfoDescRepo;
+
+	private final PmsAttrGroupRepository attrGroupRepository;
+
 	/**
 	 * Constructor (usable for Dependency Injection)
 	 * 
 	 * @param repository the repository to be injected
 	 */
-	public PmsSkuInfoService(PmsSkuInfoRepository repository) {
+	public PmsSkuInfoService(PmsSkuInfoRepository repository, PmsSkuImagesRepository skuImageRepo,
+			PmsSpuInfoDescRepository spuInfoDescRepo) {
 		super(PmsSkuInfo.class, PmsSkuInfoDTO.class);
 		this.repository = repository;
+		this.SkuImageRepo = skuImageRepo;
+		this.SpuInfoDescRepo = spuInfoDescRepo;
 	}
-	
+
 	/**
 	 * Returns the entity ID object from the given DTO
 	 *
@@ -66,7 +82,7 @@ public class PmsSkuInfoService extends GenericService<PmsSkuInfo, PmsSkuInfoDTO>
 	/**
 	 * Finds the entity identified by the given PK
 	 *
-	 * @param skuId 
+	 * @param skuId
 	 * @return the entity or null if not found
 	 */
 	public PmsSkuInfoDTO findById(Long skuId) {
@@ -80,13 +96,13 @@ public class PmsSkuInfoService extends GenericService<PmsSkuInfo, PmsSkuInfoDTO>
 	 * Saves the given entity with the given PK <br>
 	 * "UPSERT" operation (updated if it exists or created if it does not exist)
 	 *
-	 * @param skuId 
-	 * @param dto 
+	 * @param skuId
+	 * @param dto
 	 */
 	public void save(Long skuId, PmsSkuInfoDTO dto) {
 		Long entityId = skuId;
 		logger.debug("save({},{})", entityId, dto);
-		// force PK in DTO (just to be sure to conform with the given PK) 
+		// force PK in DTO (just to be sure to conform with the given PK)
 		dto.setSkuId(skuId);
 		repository.save(dtoToEntity(dto));
 	}
@@ -110,7 +126,7 @@ public class PmsSkuInfoService extends GenericService<PmsSkuInfo, PmsSkuInfoDTO>
 	/**
 	 * Updates partially the given entity if it exists
 	 *
-	 * @param skuId 
+	 * @param skuId
 	 * @param dto
 	 * @return true if updated, false if not found
 	 */
@@ -146,7 +162,7 @@ public class PmsSkuInfoService extends GenericService<PmsSkuInfo, PmsSkuInfoDTO>
 	/**
 	 * Deletes an entity by its PK
 	 *
-	 * @param skuId 
+	 * @param skuId
 	 * @return true if deleted, false if not found
 	 */
 	public boolean deleteById(Long skuId) {
@@ -160,28 +176,41 @@ public class PmsSkuInfoService extends GenericService<PmsSkuInfo, PmsSkuInfoDTO>
 		}
 	}
 
+	public SkuItemVo item(Long skuId) {
+		SkuItemVo skuItemVo = new SkuItemVo();
+		PmsSkuInfo info = repository.findById(skuId).get();
+		skuItemVo.setInfo(info);
+		List<PmsSkuImages> images = SkuImageRepo.getImagesBySkuId(skuId);
+		skuItemVo.setImages(images);
+		PmsSpuInfoDesc pmsSpuInfoDesc = SpuInfoDescRepo.findById(info.getSpuId()).get();
+		skuItemVo.setDesc(pmsSpuInfoDesc);
+		List<SpuItemBaseAttrVo> groupAttrs = attrGroupRepository.getAttrGroupWithAttrsBySpuId(info.getSpuId());
+	}
+
 	// -----------------------------------------------------------------------------------------
 	// Specific "finders"
 	// -----------------------------------------------------------------------------------------
-/***
-	public List<PmsSkuInfoDTO> findByTitle(String title) {
-		logger.debug("findByTitle({})", title);
-		// List<PmsSkuInfo> list = repository.findByTitle(title);
-		List<PmsSkuInfo> list = repository.findByTitleContaining(title);
-		return entityListToDtoList(list);
-	}
-
-	public List<PmsSkuInfoDTO> findByPrice(BigDecimal price) {
-		logger.debug("findByPrice({})", price);
-		// List<PmsSkuInfo> list = repository.findByTitle(title);
-		List<PmsSkuInfo> list = repository.findByPrice(price);
-		return entityListToDtoList(list);
-	}
-
-	public List<PmsSkuInfoDTO> findByTitleAndPrice(String title, BigDecimal price) {
-		logger.debug("findByTitleAndPrice({}, {})", title, price);
-		List<PmsSkuInfo> list = repository.findByTitleContainingAndPrice(title, price);
-		return entityListToDtoList(list);
-	}
-***/
+	/***
+	 * public List<PmsSkuInfoDTO> findByTitle(String title) {
+	 * logger.debug("findByTitle({})", title);
+	 * // List<PmsSkuInfo> list = repository.findByTitle(title);
+	 * List<PmsSkuInfo> list = repository.findByTitleContaining(title);
+	 * return entityListToDtoList(list);
+	 * }
+	 * 
+	 * public List<PmsSkuInfoDTO> findByPrice(BigDecimal price) {
+	 * logger.debug("findByPrice({})", price);
+	 * // List<PmsSkuInfo> list = repository.findByTitle(title);
+	 * List<PmsSkuInfo> list = repository.findByPrice(price);
+	 * return entityListToDtoList(list);
+	 * }
+	 * 
+	 * public List<PmsSkuInfoDTO> findByTitleAndPrice(String title, BigDecimal
+	 * price) {
+	 * logger.debug("findByTitleAndPrice({}, {})", title, price);
+	 * List<PmsSkuInfo> list = repository.findByTitleContainingAndPrice(title,
+	 * price);
+	 * return entityListToDtoList(list);
+	 * }
+	 ***/
 }
