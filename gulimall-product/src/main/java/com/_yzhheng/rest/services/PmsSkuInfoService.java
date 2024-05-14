@@ -4,8 +4,12 @@
  */
 package com._yzhheng.rest.services;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +22,14 @@ import com._yzhheng.persistence.repositories.PmsAttrGroupRepository;
 import com._yzhheng.persistence.repositories.PmsSkuImagesRepository;
 import com._yzhheng.persistence.repositories.PmsSkuInfoRepository;
 import com._yzhheng.persistence.repositories.PmsSpuInfoDescRepository;
+import com._yzhheng.rest.databaseDto.AttrDto;
+import com._yzhheng.rest.databaseDto.PmsSkuItemSaleAttrVo;
+import com._yzhheng.rest.databaseDto.SpuItemAttrGroupDto;
 import com._yzhheng.rest.dto.PmsSkuInfoDTO;
+import com._yzhheng.rest.dto.databaseSpuDto;
 import com._yzhheng.rest.services.commons.GenericService;
 import com._yzhheng.vo.SkuItemVo;
-import com._yzhheng.vo.SkuItemVo.SpuItemBaseAttrVo;
+// import com._yzhheng.vo.SkuItemVo.SpuItemBaseAttrVo;
 
 /**
  * REST service for entity "PmsSkuInfo" <br>
@@ -51,11 +59,12 @@ public class PmsSkuInfoService extends GenericService<PmsSkuInfo, PmsSkuInfoDTO>
 	 * @param repository the repository to be injected
 	 */
 	public PmsSkuInfoService(PmsSkuInfoRepository repository, PmsSkuImagesRepository skuImageRepo,
-			PmsSpuInfoDescRepository spuInfoDescRepo) {
+			PmsSpuInfoDescRepository spuInfoDescRepo, PmsAttrGroupRepository attrGroupRepository) {
 		super(PmsSkuInfo.class, PmsSkuInfoDTO.class);
 		this.repository = repository;
 		this.SkuImageRepo = skuImageRepo;
 		this.SpuInfoDescRepo = spuInfoDescRepo;
+		this.attrGroupRepository = attrGroupRepository;
 	}
 
 	/**
@@ -180,37 +189,84 @@ public class PmsSkuInfoService extends GenericService<PmsSkuInfo, PmsSkuInfoDTO>
 		SkuItemVo skuItemVo = new SkuItemVo();
 		PmsSkuInfo info = repository.findById(skuId).get();
 		skuItemVo.setInfo(info);
+		// System.out.println(pmsSpuInfoDesc.getDecript());
 		List<PmsSkuImages> images = SkuImageRepo.getImagesBySkuId(skuId);
+		System.out.println(images.getFirst().getImgUrl());
 		skuItemVo.setImages(images);
 		PmsSpuInfoDesc pmsSpuInfoDesc = SpuInfoDescRepo.findById(info.getSpuId()).get();
 		skuItemVo.setDesc(pmsSpuInfoDesc);
-		List<SpuItemBaseAttrVo> groupAttrs = attrGroupRepository.getAttrGroupWithAttrsBySpuId(info.getSpuId());
-	}
 
-	// -----------------------------------------------------------------------------------------
-	// Specific "finders"
-	// -----------------------------------------------------------------------------------------
-	/***
-	 * public List<PmsSkuInfoDTO> findByTitle(String title) {
-	 * logger.debug("findByTitle({})", title);
-	 * // List<PmsSkuInfo> list = repository.findByTitle(title);
-	 * List<PmsSkuInfo> list = repository.findByTitleContaining(title);
-	 * return entityListToDtoList(list);
-	 * }
-	 * 
-	 * public List<PmsSkuInfoDTO> findByPrice(BigDecimal price) {
-	 * logger.debug("findByPrice({})", price);
-	 * // List<PmsSkuInfo> list = repository.findByTitle(title);
-	 * List<PmsSkuInfo> list = repository.findByPrice(price);
-	 * return entityListToDtoList(list);
-	 * }
-	 * 
-	 * public List<PmsSkuInfoDTO> findByTitleAndPrice(String title, BigDecimal
-	 * price) {
-	 * logger.debug("findByTitleAndPrice({}, {})", title, price);
-	 * List<PmsSkuInfo> list = repository.findByTitleContainingAndPrice(title,
-	 * price);
-	 * return entityListToDtoList(list);
-	 * }
-	 ***/
+		System.out.println(pmsSpuInfoDesc.getDecript());
+		// List<SpuItemAttrGroupDto> groupAttrs =
+		// attrGroupRepository.getAttrGroupWithAttrsBySpuId(info.getSpuId(),
+		// info.getCatalogId());
+
+		// spu attribute
+		List<Object[]> results = attrGroupRepository.findAttrGroupWithAttrsBySpuId(info.getSpuId(),
+				info.getCatalogId());
+
+		Map<String, SpuItemAttrGroupDto> groupMap = new HashMap<>();
+		for (Object[] result : results) {
+			String groupName = (String) result[0];
+			Long attrId = (Long) result[1];
+			String attrName = (String) result[2];
+			String attrValue = (String) result[3];
+
+			groupMap.putIfAbsent(groupName, new SpuItemAttrGroupDto(groupName, new ArrayList<>()));
+			groupMap.get(groupName).getAttrs().add(new AttrDto(attrId, attrName, attrValue));
+		}
+
+		List<SpuItemAttrGroupDto> groupAttrs = new ArrayList<>(groupMap.values());
+
+		skuItemVo.setGroupAttrs(groupAttrs);
+
+		// for (SpuItemAttrGroupDto g : groupAttrs) {
+		// System.out.print(g.getGroupName() + " ");
+		// for (AttrDto g2 : g.getAttrs()) {
+		// System.out.print(g2.getAttrName() + " " + g2.getAttrValue());
+		// }
+		// System.out.println();
+		// }
+
+		List<Object[]> saleAttrVos = repository.getSaleAttrBySpuId(info.getSpuId());
+		List<PmsSkuItemSaleAttrVo> vo = new ArrayList<>();
+		for (Object[] o : saleAttrVos) {
+			Long attrId = (Long) o[0];
+			String attrName = (String) o[1];
+			String attrValues = (String) o[2];
+			vo.add(new PmsSkuItemSaleAttrVo(attrId, attrName, attrValues));
+		}
+		for (PmsSkuItemSaleAttrVo v : vo) {
+			System.out.println(v.getAttrName() + " " + v.getAttrValues());
+		}
+		skuItemVo.setSaleAttr(vo);
+		return skuItemVo;
+	}
 }
+
+// -----------------------------------------------------------------------------------------
+// Specific "finders"
+// -----------------------------------------------------------------------------------------
+/***
+ * public List<PmsSkuInfoDTO> findByTitle(String title) {
+ * logger.debug("findByTitle({})", title);
+ * // List<PmsSkuInfo> list = repository.findByTitle(title);
+ * List<PmsSkuInfo> list = repository.findByTitleContaining(title);
+ * return entityListToDtoList(list);
+ * }
+ * 
+ * public List<PmsSkuInfoDTO> findByPrice(BigDecimal price) {
+ * logger.debug("findByPrice({})", price);
+ * // List<PmsSkuInfo> list = repository.findByTitle(title);
+ * List<PmsSkuInfo> list = repository.findByPrice(price);
+ * return entityListToDtoList(list);
+ * }
+ * 
+ * public List<PmsSkuInfoDTO> findByTitleAndPrice(String title, BigDecimal
+ * price) {
+ * logger.debug("findByTitleAndPrice({}, {})", title, price);
+ * List<PmsSkuInfo> list = repository.findByTitleContainingAndPrice(title,
+ * price);
+ * return entityListToDtoList(list);
+ * }
+ ***/

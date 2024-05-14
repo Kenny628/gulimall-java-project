@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com._yzhheng.persistence.entities.PmsSkuInfo;
+import com._yzhheng.rest.databaseDto.PmsSkuItemSaleAttrVo;
 
 /**
  * Spring Data JPA repository for entity "PmsSkuInfo" <br>
@@ -32,6 +33,9 @@ public interface PmsSkuInfoRepository extends JpaRepository<PmsSkuInfo, Long> {
 
 	@Query(value = "SELECT * FROM pms_sku_info where spu_id = :spuId", nativeQuery = true)
 	Optional<List<PmsSkuInfo>> getAllSkuBySpuId(Long spuId);
+
+	@Query(value = "select ssav.attr_id attr_id, ssav.attr_name attr_name, group_concat(DISTINCT ssav.attr_value) attr_values FROM pms_sku_info info LEFT JOIN pms_sku_sale_attr_value ssav ON ssav.sku_id = info.sku_id WHERE info.spu_id = :spuId GROUP BY ssav.attr_id, ssav.attr_name", nativeQuery = true)
+	List<Object[]> getSaleAttrBySpuId(Long spuId);
 
 	// Insert specific finders here
 

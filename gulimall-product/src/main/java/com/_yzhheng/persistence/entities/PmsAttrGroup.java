@@ -6,6 +6,10 @@ package com._yzhheng.persistence.entities;
 
 import java.io.Serializable;
 
+import com._yzhheng.rest.databaseDto.AttrDto;
+import com._yzhheng.rest.databaseDto.SpuItemAttrGroupDto;
+import com._yzhheng.rest.dto.databaseSpuDto;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -17,56 +21,73 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name="pms_attr_group", catalog="gulimall-pms" )
+@SqlResultSetMapping(name = "SpuItemAttrGroupMapping", classes = {
+    @ConstructorResult(targetClass = SpuItemAttrGroupDto.class, columns = {
+        @ColumnResult(name = "groupName", type = String.class),
+        @ColumnResult(name = "attrs", type = AttrDto.class)
+    }),
+    @ConstructorResult(targetClass = AttrDto.class, columns = {
+        @ColumnResult(name = "attrId", type = Long.class),
+        @ColumnResult(name = "attrName", type = String.class),
+        @ColumnResult(name = "attrValue", type = String.class)
+    })
+})
+@NamedNativeQuery(name = "getAttrGroupWithAttrsBySpuId", query = "SELECT ag.attr_group_name AS groupName, atr.attr_id AS attrId, atr.attr_name AS attrName, pav.attr_value AS attrValue "
+    +
+    "FROM pms_attr_group ag " +
+    "LEFT JOIN pms_attr_attrgroup_relation aar ON aar.attr_group_id = ag.attr_group_id " +
+    "LEFT JOIN pms_attr atr ON atr.attr_id = aar.attr_id " +
+    "LEFT JOIN pms_product_attr_value pav ON pav.attr_id = atr.attr_id " +
+    "WHERE ag.catelog_id = :catelogId AND pav.spu_id = :spuId", resultSetMapping = "SpuItemAttrGroupMapping")
+@Table(name = "pms_attr_group", catalog = "gulimall-pms")
 public class PmsAttrGroup implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    //--- PRIMARY KEY 
-    @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(name="attr_group_id", nullable=false)
-    private Long       attrGroupId ;
+  // --- PRIMARY KEY
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  @Column(name = "attr_group_id", nullable = false)
+  private Long attrGroupId;
 
-    //--- OTHER DATA FIELDS 
-    @Column(name="attr_group_name", length=20)
-    private String     attrGroupName ;
+  // --- OTHER DATA FIELDS
+  @Column(name = "attr_group_name", length = 20)
+  private String attrGroupName;
 
-    @Column(name="sort")
-    private Integer    sort ;
+  @Column(name = "sort")
+  private Integer sort;
 
-    @Column(name="descript", length=255)
-    private String     descript ;
+  @Column(name = "descript", length = 255)
+  private String descript;
 
-    @Column(name="icon", length=255)
-    private String     icon ;
+  @Column(name = "icon", length = 255)
+  private String icon;
 
-    @Column(name="catelog_id")
-    private Long       catelogId ;
+  @Column(name = "catelog_id")
+  private Long catelogId;
 
-    /**
-     * Constructor
-     */
-    public PmsAttrGroup() {
-		super();
-    }
-  
-	@Override
- public String toString() { 
-  StringBuilder sb = new StringBuilder(); 
-  sb.append(attrGroupId);
-  sb.append("|");
-  sb.append(attrGroupName);
-  sb.append("|");
-  sb.append(sort);
-  sb.append("|");
-  sb.append(descript);
-  sb.append("|");
-  sb.append(icon);
-  sb.append("|");
-  sb.append(catelogId);
-  return sb.toString(); 
- } 
+  /**
+   * Constructor
+   */
+  public PmsAttrGroup() {
+    super();
+  }
 
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(attrGroupId);
+    sb.append("|");
+    sb.append(attrGroupName);
+    sb.append("|");
+    sb.append(sort);
+    sb.append("|");
+    sb.append(descript);
+    sb.append("|");
+    sb.append(icon);
+    sb.append("|");
+    sb.append(catelogId);
+    return sb.toString();
+  }
 
 }

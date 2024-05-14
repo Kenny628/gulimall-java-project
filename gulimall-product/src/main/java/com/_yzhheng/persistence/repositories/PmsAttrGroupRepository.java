@@ -7,9 +7,14 @@ package com._yzhheng.persistence.repositories;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import com._yzhheng.persistence.entities.PmsAttrGroup;
-import com._yzhheng.vo.SkuItemVo.SpuItemBaseAttrVo;
+import com._yzhheng.rest.databaseDto.SpuItemAttrGroupDto;
+import com._yzhheng.rest.dto.databaseSpuDto;
+// import com._yzhheng.vo.SkuItemVo.SpuItemBaseAttrVo;
 
 /**
  * Spring Data JPA repository for entity "PmsAttrGroup" <br>
@@ -27,9 +32,37 @@ import com._yzhheng.vo.SkuItemVo.SpuItemBaseAttrVo;
  * @author Telosys
  *
  */
+@Repository
 public interface PmsAttrGroupRepository extends JpaRepository<PmsAttrGroup, Long> {
+	@Query(value = "SELECT ag.attr_group_name AS groupName, atr.attr_id AS attrId, atr.attr_name AS attrName, pav.attr_value AS attrValue "
+			+
+			"FROM pms_attr_group ag " +
+			"LEFT JOIN pms_attr_attrgroup_relation aar ON aar.attr_group_id = ag.attr_group_id " +
+			"LEFT JOIN pms_attr atr ON atr.attr_id = aar.attr_id " +
+			"LEFT JOIN pms_product_attr_value pav ON pav.attr_id = atr.attr_id " +
+			"WHERE ag.catelog_id = :catelogId AND pav.spu_id = :spuId", nativeQuery = true)
+	List<Object[]> findAttrGroupWithAttrsBySpuId(@Param("spuId") Long spuId, @Param("catelogId") Long catelogId);
 
-	List<SpuItemBaseAttrVo> getAttrGroupWithAttrsBySpuId(Long spuId);
+	// List<SpuItemAttrGroupDto> getAttrGroupWithAttrsBySpuId(@Param("spuId") Long
+	// spuId,
+	// @Param("catelogId") Long catelogId);
+	// SELECT
+	// ag.attr_group_name,atr.attr_name,
+	// pav.attr_value
+
+	// FROM`gulimall-pms`.pms_attr_group ag
+	// left join
+	// pms_attr_attrgroup_relation agr
+	// on
+	// ag.attr_group_id=agr.attr_group_id
+	// left
+	// join pms_attr
+	// atr on agr.attr_id=
+	// atr.attr_id left
+	// join pms_product_attr_value
+	// pav on agr.attr_id=pav.attr_id
+	// where ag.catelog_id=225
+	// and pav.spu_id=3
 
 	// Insert specific finders here
 

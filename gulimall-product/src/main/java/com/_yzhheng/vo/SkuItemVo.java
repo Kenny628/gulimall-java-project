@@ -9,6 +9,10 @@ import java.util.Map;
 import com._yzhheng.persistence.entities.PmsSkuImages;
 import com._yzhheng.persistence.entities.PmsSkuInfo;
 import com._yzhheng.persistence.entities.PmsSpuInfoDesc;
+import com._yzhheng.rest.databaseDto.PmsSkuItemSaleAttrVo;
+import com._yzhheng.rest.databaseDto.SpuItemAttrGroupDto;
+
+import jakarta.annotation.sql.DataSourceDefinition;
 
 /**
  * @author Starsea
@@ -35,25 +39,25 @@ public class SkuItemVo {
     private PmsSpuInfoDesc desc;
 
     // spu的规格参数信息
-    private List<SpuItemBaseAttrVo> groupAttrs;
+    private List<SpuItemAttrGroupDto> groupAttrs;
 
-    @Data
-    public static class PmsSkuItemSaleAttrVo {
-        private Long attrId;
-        private String attrName;
-        private List<String> attrValues;
-    }
+    // @Data
+    // public static class PmsSkuItemSaleAttrVo {
+    // private Long attrId;
+    // private String attrName;
+    // private String attrValues;
+    // }
 
-    @Data
-    public static class SpuItemBaseAttrVo {
-        private String grouName;
-        private List<String> attrValues;
-    }
+    // @Data
+    // public static class SpuItemBaseAttrVo {
+    // private String attrGroupName;
+    // private List<SpuBaseAttrVo> attrValues;
+    // }
 
-    @Data
-    public static class SpuBaseAttrVo {
-        private String attrName;
-        private String attrValue;
-    }
+    // @Data
+    // public static class SpuBaseAttrVo {
+    // private String attrName;
+    // private String attrValue;
+    // }
 
 }
