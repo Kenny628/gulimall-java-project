@@ -72,9 +72,9 @@ spring:
             - Host=search.gulimall.com:8600
 
         - id: gulimall_auth_route
-          uri: lb://gulimall-auth
+          uri: lb://gulimall-auth-server
           predicates:
-            - Host=auth.gulimall.com
+            - Host=auth.gulimall.com:8600
 
         - id: gulimall_cart_route
           uri: lb://gulimall-cart

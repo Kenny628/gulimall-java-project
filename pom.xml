@@ -16,6 +16,7 @@
 		<module>gulimall-order</module>
 		<module>gulimall-ware</module>
 		<module>gulimall-member</module>
+		<module>gulimall-auth-server</module>
 		<module>gulimall-common</module>
 		<module>gulimall-search</module>
 		<module>renren-fast</module>

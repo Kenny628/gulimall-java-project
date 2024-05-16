@@ -7,20 +7,23 @@ package com._yzhheng.rest.services;
 import java.util.List;
 import java.util.Optional;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com._yzhheng.exception.UserNameException;
 import com._yzhheng.persistence.entities.UmsMember;
 import com._yzhheng.persistence.repositories.UmsMemberRepository;
 import com._yzhheng.rest.dto.UmsMemberDTO;
 import com._yzhheng.rest.services.commons.GenericService;
+import com._yzhheng.vo.MemberRegisVo;
 
 /**
  * REST service for entity "UmsMember" <br>
  * 
- * This service provides all the necessary operations required by the REST controller <br>
+ * This service provides all the necessary operations required by the REST
+ * controller <br>
  * 
  * @author Telosys
  *
@@ -41,7 +44,7 @@ public class UmsMemberService extends GenericService<UmsMember, UmsMemberDTO> {
 		super(UmsMember.class, UmsMemberDTO.class);
 		this.repository = repository;
 	}
-	
+
 	/**
 	 * Returns the entity ID object from the given DTO
 	 *
@@ -66,7 +69,7 @@ public class UmsMemberService extends GenericService<UmsMember, UmsMemberDTO> {
 	/**
 	 * Finds the entity identified by the given PK
 	 *
-	 * @param id 
+	 * @param id
 	 * @return the entity or null if not found
 	 */
 	public UmsMemberDTO findById(Long id) {
@@ -80,13 +83,13 @@ public class UmsMemberService extends GenericService<UmsMember, UmsMemberDTO> {
 	 * Saves the given entity with the given PK <br>
 	 * "UPSERT" operation (updated if it exists or created if it does not exist)
 	 *
-	 * @param id 
-	 * @param dto 
+	 * @param id
+	 * @param dto
 	 */
 	public void save(Long id, UmsMemberDTO dto) {
 		Long entityId = id;
 		logger.debug("save({},{})", entityId, dto);
-		// force PK in DTO (just to be sure to conform with the given PK) 
+		// force PK in DTO (just to be sure to conform with the given PK)
 		dto.setId(id);
 		repository.save(dtoToEntity(dto));
 	}
@@ -110,7 +113,7 @@ public class UmsMemberService extends GenericService<UmsMember, UmsMemberDTO> {
 	/**
 	 * Updates partially the given entity if it exists
 	 *
-	 * @param id 
+	 * @param id
 	 * @param dto
 	 * @return true if updated, false if not found
 	 */
@@ -146,7 +149,7 @@ public class UmsMemberService extends GenericService<UmsMember, UmsMemberDTO> {
 	/**
 	 * Deletes an entity by its PK
 	 *
-	 * @param id 
+	 * @param id
 	 * @return true if deleted, false if not found
 	 */
 	public boolean deleteById(Long id) {
@@ -160,28 +163,49 @@ public class UmsMemberService extends GenericService<UmsMember, UmsMemberDTO> {
 		}
 	}
 
+	public void register(MemberRegisVo memberRegisVo) {
+		// TODO Auto-generated method stub
+		UmsMember entity = new UmsMember();
+		entity.setLevelId(1L);
+
+		checkUserNameUnique(memberRegisVo.getUserName());
+		entity.setUsername(memberRegisVo.getUserName());
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		String encoded = encoder.encode(memberRegisVo.getPassword());
+		entity.setPassword(encoded);
+		repository.save(entity);
+	}
+
+	public void checkUserNameUnique(String userName) throws UserNameException {
+		int count = repository.countUserName(userName);
+		if (count > 0) {
+			throw new UserNameException();
+		}
+	}
 	// -----------------------------------------------------------------------------------------
 	// Specific "finders"
 	// -----------------------------------------------------------------------------------------
-/***
-	public List<UmsMemberDTO> findByTitle(String title) {
-		logger.debug("findByTitle({})", title);
-		// List<UmsMember> list = repository.findByTitle(title);
-		List<UmsMember> list = repository.findByTitleContaining(title);
-		return entityListToDtoList(list);
-	}
-
-	public List<UmsMemberDTO> findByPrice(BigDecimal price) {
-		logger.debug("findByPrice({})", price);
-		// List<UmsMember> list = repository.findByTitle(title);
-		List<UmsMember> list = repository.findByPrice(price);
-		return entityListToDtoList(list);
-	}
-
-	public List<UmsMemberDTO> findByTitleAndPrice(String title, BigDecimal price) {
-		logger.debug("findByTitleAndPrice({}, {})", title, price);
-		List<UmsMember> list = repository.findByTitleContainingAndPrice(title, price);
-		return entityListToDtoList(list);
-	}
-***/
+	/***
+	 * public List<UmsMemberDTO> findByTitle(String title) {
+	 * logger.debug("findByTitle({})", title);
+	 * // List<UmsMember> list = repository.findByTitle(title);
+	 * List<UmsMember> list = repository.findByTitleContaining(title);
+	 * return entityListToDtoList(list);
+	 * }
+	 * 
+	 * public List<UmsMemberDTO> findByPrice(BigDecimal price) {
+	 * logger.debug("findByPrice({})", price);
+	 * // List<UmsMember> list = repository.findByTitle(title);
+	 * List<UmsMember> list = repository.findByPrice(price);
+	 * return entityListToDtoList(list);
+	 * }
+	 * 
+	 * public List<UmsMemberDTO> findByTitleAndPrice(String title, BigDecimal price)
+	 * {
+	 * logger.debug("findByTitleAndPrice({}, {})", title, price);
+	 * List<UmsMember> list = repository.findByTitleContainingAndPrice(title,
+	 * price);
+	 * return entityListToDtoList(list);
+	 * }
+	 ***/
 }

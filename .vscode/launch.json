@@ -2,6 +2,20 @@
   "configurations": [
     {
       "type": "java",
+      "name": "GulimallAuthServerApplication",
+      "request": "launch",
+      "mainClass": "com._yzhheng.GulimallAuthServerApplication",
+      "projectName": "gulimall-auth-server"
+    },
+    {
+      "type": "java",
+      "name": "GulimallAuthServerApplication",
+      "request": "launch",
+      "mainClass": "com._yzhheng.gulimallauthserver.GulimallAuthServerApplication",
+      "projectName": "gulimall-auth-server"
+    },
+    {
+      "type": "java",
       "name": "GulimallWareApplication",
       "request": "launch",
       "mainClass": "com._yzhheng.gulimallware.GulimallWareApplication",
