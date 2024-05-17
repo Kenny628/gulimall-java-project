@@ -3,8 +3,8 @@ package com._yzhheng.vo;
 import lombok.Data;
 
 @Data
-public class MemberRegisVo {
-    private String userName;
+public class MemberLoginVo {
+
+    private String loginacct;
     private String password;
-    private String code;
 }

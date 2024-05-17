@@ -30,6 +30,9 @@ public interface UmsMemberRepository extends JpaRepository<UmsMember, Long> {
 	@Query(value = "Select count(*) from ums_member where username = :userName", nativeQuery = true)
 	int countUserName(String userName);
 
+	@Query(value = "Select * from ums_member where username = :loginacct", nativeQuery = true)
+	UmsMember findUserByName(String loginacct);
+
 	// Insert specific finders here
 
 	// List<UmsMember> findByXxx(String xxx);

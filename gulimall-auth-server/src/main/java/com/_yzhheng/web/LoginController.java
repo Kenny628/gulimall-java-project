@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com._yzhheng.feign.MemberFeign;
+import com._yzhheng.vo.UserLoginVo;
 import com._yzhheng.vo.UserRegisVo;
 
 import jakarta.validation.Valid;
@@ -78,16 +79,34 @@ public class LoginController {
             return "redirect:http://auth.gulimall.com:8600/reg.html";
         }
 
-        ResponseEntity<?> response = memberFeign.registerUser(userRegisterVo);
-        if (response.getStatusCode() == HttpStatus.OK) {
+        ResponseEntity<String> response = memberFeign.registerUser(userRegisterVo);
+        if (response.getBody() == null) {
 
-            return "redirect:/login.html";
+            return "redirect:http://auth.gulimall.com:8600/login.html";
             // 成功
         } else {
             Map<String, String> errors = new HashMap<>();
             errors.put("msg", response.getBody().toString());
+            System.out.println(response.getBody().toString());
+            redirectAttributes.addFlashAttribute("errors", errors);
             return "redirect:http://auth.gulimall.com:8600/reg.html";
         }
         // return "redirect:/login.html";
+    }
+
+    @PostMapping("/login")
+    public String login(UserLoginVo userLoginvo, RedirectAttributes redirectAttributes) {
+        ResponseEntity<String> response = memberFeign.loginUser(userLoginvo);
+        if (response.getBody() == null) {
+
+            return "redirect:http://gulimall.com:8600";
+            // 成功
+        } else {
+            Map<String, String> errors = new HashMap<>();
+            errors.put("msg", response.getBody().toString());
+            redirectAttributes.addFlashAttribute("errors", errors);
+            System.out.println(response.getBody().toString());
+            return "redirect:http://auth.gulimall.com:8600/login.html";
+        }
     }
 }

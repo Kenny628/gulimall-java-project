@@ -17,6 +17,7 @@ import com._yzhheng.persistence.entities.UmsMember;
 import com._yzhheng.persistence.repositories.UmsMemberRepository;
 import com._yzhheng.rest.dto.UmsMemberDTO;
 import com._yzhheng.rest.services.commons.GenericService;
+import com._yzhheng.vo.MemberLoginVo;
 import com._yzhheng.vo.MemberRegisVo;
 
 /**
@@ -163,7 +164,7 @@ public class UmsMemberService extends GenericService<UmsMember, UmsMemberDTO> {
 		}
 	}
 
-	public void register(MemberRegisVo memberRegisVo) {
+	public void register(MemberRegisVo memberRegisVo) throws UserNameException {
 		// TODO Auto-generated method stub
 		UmsMember entity = new UmsMember();
 		entity.setLevelId(1L);
@@ -182,6 +183,7 @@ public class UmsMemberService extends GenericService<UmsMember, UmsMemberDTO> {
 			throw new UserNameException();
 		}
 	}
+
 	// -----------------------------------------------------------------------------------------
 	// Specific "finders"
 	// -----------------------------------------------------------------------------------------
@@ -208,4 +210,21 @@ public class UmsMemberService extends GenericService<UmsMember, UmsMemberDTO> {
 	 * return entityListToDtoList(list);
 	 * }
 	 ***/
+
+	public UmsMember login(MemberLoginVo userLoginVo) {
+		// TODO Auto-generated method stub
+		UmsMember member = repository.findUserByName(userLoginVo.getLoginacct());
+		if (member == null) {
+			return null;
+		} else {
+			String passwordDb = member.getPassword();
+			BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+			boolean matches = bCryptPasswordEncoder.matches(userLoginVo.getPassword(), passwordDb);
+			if (matches) {
+				return member;
+			} else {
+				return null;
+			}
+		}
+	}
 }

@@ -22,8 +22,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com._yzhheng.exception.UserNameException;
+import com._yzhheng.persistence.entities.UmsMember;
 import com._yzhheng.rest.dto.UmsMemberDTO;
 import com._yzhheng.rest.services.UmsMemberService;
+import com._yzhheng.vo.MemberLoginVo;
 import com._yzhheng.vo.MemberRegisVo;
 
 @RestController
@@ -56,17 +58,27 @@ public class UmsMemberRestController {
 		return ResponseEntity.ok(list); // always 200
 	}
 
+	@PostMapping("/login")
+	public ResponseEntity<String> loginUser(@RequestBody MemberLoginVo userLoginVo) {
+		UmsMember member = service.login(userLoginVo);
+		if (member != null) {
+			return ResponseEntity.ok().body(null);
+		} else {
+			return ResponseEntity.ok().body("Login error");
+		}
+	}
+
 	@PostMapping("/register")
-	public ResponseEntity<?> registerUser(@RequestBody MemberRegisVo memberRegisVo) {
+	public ResponseEntity<String> registerUser(@RequestBody MemberRegisVo memberRegisVo) {
 		// TODO: process POST request
 
 		try {
 			service.register(memberRegisVo);
 		} catch (UserNameException e) {
 			// TODO: handle exception
-			return ResponseEntity.badRequest().body(e.getMessage());
+			return ResponseEntity.ok().body(e.getMessage());
 		}
-		service.register(memberRegisVo);
+		// service.register(memberRegisVo);
 		return ResponseEntity.ok().body(null);
 	}
 

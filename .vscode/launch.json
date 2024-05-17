@@ -2,6 +2,20 @@
   "configurations": [
     {
       "type": "java",
+      "name": "GulimallMemberApplication",
+      "request": "launch",
+      "mainClass": "com._yzhheng.gulimallmember.GulimallMemberApplication",
+      "projectName": "gulimall-member"
+    },
+    {
+      "type": "java",
+      "name": "SpringBootStarter",
+      "request": "launch",
+      "mainClass": "com._yzhheng.SpringBootStarter",
+      "projectName": "gulimall-member"
+    },
+    {
+      "type": "java",
       "name": "GulimallAuthServerApplication",
       "request": "launch",
       "mainClass": "com._yzhheng.GulimallAuthServerApplication",
