@@ -30,6 +30,7 @@ import jakarta.transaction.Transactional;
  */
 public interface PmsSpuInfoRepository extends JpaRepository<PmsSpuInfo, Long> {
 
+	// *IMPORTANT*
 	@Transactional
 	@Modifying
 	@Query(value = "UPDATE pms_spu_info SET publish_status = :publishStatus WHERE id = :spuId", nativeQuery = true)

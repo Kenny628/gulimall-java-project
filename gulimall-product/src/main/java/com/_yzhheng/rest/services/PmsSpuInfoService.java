@@ -275,6 +275,7 @@ public class PmsSpuInfoService extends GenericService<PmsSpuInfo, PmsSpuInfoDTO>
 			repository.updateSpuStatus(spuId, publishStatus);
 		}
 	}
+
 	// -----------------------------------------------------------------------------------------
 	// Specific "finders"
 	// -----------------------------------------------------------------------------------------
@@ -301,4 +302,5 @@ public class PmsSpuInfoService extends GenericService<PmsSpuInfo, PmsSpuInfoDTO>
 	 * return entityListToDtoList(list);
 	 * }
 	 ***/
+
 }

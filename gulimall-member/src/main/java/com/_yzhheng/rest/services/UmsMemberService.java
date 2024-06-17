@@ -19,6 +19,7 @@ import com._yzhheng.rest.dto.UmsMemberDTO;
 import com._yzhheng.rest.services.commons.GenericService;
 import com._yzhheng.vo.MemberLoginVo;
 import com._yzhheng.vo.MemberRegisVo;
+import com._yzhheng.vo.SocialUserLogin;
 
 /**
  * REST service for entity "UmsMember" <br>
@@ -225,6 +226,28 @@ public class UmsMemberService extends GenericService<UmsMember, UmsMemberDTO> {
 			} else {
 				return null;
 			}
+		}
+	}
+
+	public UmsMember login(SocialUserLogin socialUserLogin) {
+		// TODO Auto-generated method stub
+		UmsMember member = repository.findUserBySocialUid(socialUserLogin.getRetrievedUserId());
+		if (member == null) {
+			// return null;
+			UmsMember newMember = new UmsMember();
+			newMember.setLevelId(1L);
+			newMember.setUsername(socialUserLogin.getRetrievedUsername());
+			newMember.setSocialUid(socialUserLogin.getRetrievedUserId());
+			newMember.setAccessToken(socialUserLogin.getAccess_token());
+			newMember.setNickname(socialUserLogin.getRetrievedUsername());
+			repository.save(newMember);
+			return newMember;
+		} else {
+			// member.setAccessToken(socialUserLogin.getAccess_token());
+			repository.updateAccessTokenBySocialUid(socialUserLogin.getRetrievedUserId(),
+					socialUserLogin.getAccess_token());
+			member.setAccessToken(socialUserLogin.getAccess_token());
+			return member;
 		}
 	}
 }

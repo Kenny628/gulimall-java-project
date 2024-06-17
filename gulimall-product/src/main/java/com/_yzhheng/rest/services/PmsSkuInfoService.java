@@ -242,6 +242,11 @@ public class PmsSkuInfoService extends GenericService<PmsSkuInfo, PmsSkuInfoDTO>
 		skuItemVo.setSaleAttr(vo);
 		return skuItemVo;
 	}
+
+	public List<PmsSkuInfo> searchSkuByUserInputedText(String userInputedText) {
+		List<PmsSkuInfo> list = repository.searchSkusBySku_NameInputedByUser(userInputedText).get();
+		return list;
+	}
 }
 
 // -----------------------------------------------------------------------------------------

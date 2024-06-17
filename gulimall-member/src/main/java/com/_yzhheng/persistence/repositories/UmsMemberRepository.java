@@ -5,9 +5,12 @@
 package com._yzhheng.persistence.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com._yzhheng.persistence.entities.UmsMember;
+
+import jakarta.transaction.Transactional;
 
 /**
  * Spring Data JPA repository for entity "UmsMember" <br>
@@ -33,6 +36,14 @@ public interface UmsMemberRepository extends JpaRepository<UmsMember, Long> {
 	@Query(value = "Select * from ums_member where username = :loginacct", nativeQuery = true)
 	UmsMember findUserByName(String loginacct);
 
+	@Query(value = "Select * from ums_member where social_uid = :socialUid", nativeQuery = true)
+	UmsMember findUserBySocialUid(String socialUid);
+
+	// Define the row limit and execute. This is done for safety purposes.
+	@Transactional
+	@Modifying
+	@Query(value = "UPDATE ums_member SET access_token = :accessToken WHERE social_uid = :socialUid limit 1", nativeQuery = true)
+	void updateAccessTokenBySocialUid(String socialUid, String accessToken);
 	// Insert specific finders here
 
 	// List<UmsMember> findByXxx(String xxx);

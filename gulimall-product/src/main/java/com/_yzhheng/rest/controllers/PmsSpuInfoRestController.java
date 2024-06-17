@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com._yzhheng.persistence.entities.PmsSkuInfo;
 import com._yzhheng.rest.dto.PmsSpuInfoDTO;
 import com._yzhheng.rest.services.PmsSpuInfoService;
 
@@ -155,5 +156,12 @@ public class PmsSpuInfoRestController {
 		service.upSpu(spuId);
 		return ResponseEntity.ok().build();
 	}
+
+	// @GetMapping("/searchSku/{userInputedText}")
+	// public ResponseEntity<List<PmsSkuInfo>>
+	// searchSkuByUserInputedText(@PathVariable String userInputedText) {
+	// List<PmsSkuInfo> list = service.searchSkuByUserInputedText(userInputedText);
+	// return ResponseEntity.ok(list);
+	// }
 
 }

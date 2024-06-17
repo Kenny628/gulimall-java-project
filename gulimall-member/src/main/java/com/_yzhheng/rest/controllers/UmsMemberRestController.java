@@ -27,6 +27,8 @@ import com._yzhheng.rest.dto.UmsMemberDTO;
 import com._yzhheng.rest.services.UmsMemberService;
 import com._yzhheng.vo.MemberLoginVo;
 import com._yzhheng.vo.MemberRegisVo;
+import com._yzhheng.vo.SocialUserLogin;
+import com.alibaba.fastjson.JSON;
 
 @RestController
 @RequestMapping(value = "api/v1/UmsMember", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -58,11 +60,21 @@ public class UmsMemberRestController {
 		return ResponseEntity.ok(list); // always 200
 	}
 
+	@PostMapping("/oauth2/login")
+	public ResponseEntity<String> loginUser(@RequestBody SocialUserLogin socailUserLogin) {
+		UmsMember member = service.login(socailUserLogin);
+		if (member != null) {
+			return ResponseEntity.ok().body(JSON.toJSONString(member));
+		} else {
+			return ResponseEntity.ok().body("Login error");
+		}
+	}
+
 	@PostMapping("/login")
 	public ResponseEntity<String> loginUser(@RequestBody MemberLoginVo userLoginVo) {
 		UmsMember member = service.login(userLoginVo);
 		if (member != null) {
-			return ResponseEntity.ok().body(null);
+			return ResponseEntity.ok().body(JSON.toJSONString(member));
 		} else {
 			return ResponseEntity.ok().body("Login error");
 		}

@@ -95,7 +95,7 @@
   					</b>
         <ul>
           <li>
-            <a href="http://auth.gulimall.com/login.html">你好，[[${session.loginUser==null?"请登录":session.loginUser.nickname}]]</a>
+            <a href="http://auth.gulimall.com/login.html">你好，[[${session.loginUser==null?"请登录":session.loginUser}]]</a>
           </li>
           <li>
             <a href="http://auth.gulimall.com/reg.html" class="li_2">免费注册</a>
@@ -584,7 +584,7 @@
   function search() {
       var keyword=$("#searchText").val()
       // window.location.href="http://search.gulimall.com:8600/search.html?keyword="+keyword;
-      window.location.href="http://search.gulimall.com:8600";
+      window.location.href="http://search.gulimall.com:8600?keyword="+keyword;
   }
 
   $.get("http://seckill.gulimall.com/getCurrentSeckillSkus", function (res) {

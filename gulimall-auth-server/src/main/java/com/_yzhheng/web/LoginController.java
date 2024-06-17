@@ -16,9 +16,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com._yzhheng.feign.MemberFeign;
+import com._yzhheng.vo.UmsMemberDTO;
 import com._yzhheng.vo.UserLoginVo;
 import com._yzhheng.vo.UserRegisVo;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -95,18 +99,25 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String login(UserLoginVo userLoginvo, RedirectAttributes redirectAttributes) {
-        ResponseEntity<String> response = memberFeign.loginUser(userLoginvo);
-        if (response.getBody() == null) {
-
-            return "redirect:http://gulimall.com:8600";
+    public String login(UserLoginVo userLoginvo, RedirectAttributes redirectAttributes, HttpSession session) {
+        Object response = memberFeign.loginUser(userLoginvo).getBody();
+        if (response.toString().equals("Login error")) {
+            Map<String, String> errors = new HashMap<>();
+            // String temp = response.getBody().toString();
+            errors.put("msg", response.toString());
+            redirectAttributes.addFlashAttribute("errors", errors);
+            // System.out.println(response.getBody().toString());
+            return "redirect:http://auth.gulimall.com:8600/login.html";
+            // return "redirect:http://gulimall.com:8600";
             // 成功
         } else {
-            Map<String, String> errors = new HashMap<>();
-            errors.put("msg", response.getBody().toString());
-            redirectAttributes.addFlashAttribute("errors", errors);
-            System.out.println(response.getBody().toString());
-            return "redirect:http://auth.gulimall.com:8600/login.html";
+            // System.out.println("successful111" + response.toString());
+            // UmsMemberDTO loginMember = JSON.parseObject(response.toString(),
+            // UmsMemberDTO.class);
+            // session.setAttribute("loginUser", loginMember);
+            JSONObject jj = JSON.parseObject(response.toString());
+            session.setAttribute("loginUser", jj.getString("username").toString());
+            return "redirect:http://gulimall.com:8600";
         }
     }
 }

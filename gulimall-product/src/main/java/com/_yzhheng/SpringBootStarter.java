@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 import com._yzhheng.application.Application;
 
@@ -22,6 +23,7 @@ import com._yzhheng.application.Application;
  * @author Telosys
  *
  */
+@EnableRedisHttpSession
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableFeignClients

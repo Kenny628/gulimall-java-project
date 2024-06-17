@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com._yzhheng.vo.SocialUserLogin;
 import com._yzhheng.vo.UserLoginVo;
 import com._yzhheng.vo.UserRegisVo;
 
@@ -15,4 +16,7 @@ public interface MemberFeign {
 
     @PostMapping("api/v1/UmsMember/login")
     public ResponseEntity<String> loginUser(@RequestBody UserLoginVo userLoginVo);
+
+    @PostMapping("api/v1/UmsMember/oauth2/login")
+    public ResponseEntity<String> loginUser(@RequestBody SocialUserLogin socialUserLogin);
 }

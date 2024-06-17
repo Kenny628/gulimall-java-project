@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com._yzhheng.persistence.entities.PmsSkuInfo;
 import com._yzhheng.rest.dto.PmsSkuInfoDTO;
 import com._yzhheng.rest.services.PmsSkuInfoService;
 
@@ -29,9 +30,9 @@ import com._yzhheng.rest.services.PmsSkuInfoService;
 public class PmsSkuInfoRestController {
 
 	private static final Logger logger = LoggerFactory.getLogger(PmsSkuInfoRestController.class);
-	
-	private PmsSkuInfoService service ; // injected
-	
+
+	private PmsSkuInfoService service; // injected
+
 	/**
 	 * Constructor (usable for Dependency Injection)
 	 *
@@ -41,7 +42,7 @@ public class PmsSkuInfoRestController {
 		super();
 		this.service = service;
 	}
-    
+
 	/**
 	 * Get ALL
 	 *
@@ -49,43 +50,40 @@ public class PmsSkuInfoRestController {
 	 */
 	@GetMapping("")
 	protected ResponseEntity<List<PmsSkuInfoDTO>> findAll() {
-    	logger.debug("REST : GET - findAll");
-    	List<PmsSkuInfoDTO> list = service.findAll();
-    	return ResponseEntity.ok(list); // always 200
-    }
-    
-    /**
-     * Get ONE identified by the given PK
+		logger.debug("REST : GET - findAll");
+		List<PmsSkuInfoDTO> list = service.findAll();
+		return ResponseEntity.ok(list); // always 200
+	}
+
+	/**
+	 * Get ONE identified by the given PK
 	 *
 	 * @param skuId
-     * @return 200 or 404 
-     */
-    @GetMapping("/{skuId}")
-    protected ResponseEntity<PmsSkuInfoDTO> findById(@PathVariable Long skuId) {
-    	logger.debug("REST : GET - findById");
-    	PmsSkuInfoDTO pmsSkuInfoDTO = service.findById(skuId);
-		if ( pmsSkuInfoDTO != null ) {
+	 * @return 200 or 404
+	 */
+	@GetMapping("/{skuId}")
+	protected ResponseEntity<PmsSkuInfoDTO> findById(@PathVariable Long skuId) {
+		logger.debug("REST : GET - findById");
+		PmsSkuInfoDTO pmsSkuInfoDTO = service.findById(skuId);
+		if (pmsSkuInfoDTO != null) {
 			return ResponseEntity.ok(pmsSkuInfoDTO); // 200 OK, found
-		}
-		else {
+		} else {
 			return ResponseEntity.notFound().build(); // 404 Not found
-		}		
-    }
+		}
+	}
 
-    
 	/**
- 	 * Create if doesn't exist 
+	 * Create if doesn't exist
 	 *
 	 * @param pmsSkuInfoDTO
 	 * @return 201 created or 409 conflict
 	 */
 	@PostMapping("")
 	protected ResponseEntity<Void> create(@RequestBody PmsSkuInfoDTO pmsSkuInfoDTO) {
-    	logger.debug("REST : POST - create");
-		if ( service.create(pmsSkuInfoDTO) ) {
+		logger.debug("REST : POST - create");
+		if (service.create(pmsSkuInfoDTO)) {
 			return ResponseEntity.status(HttpStatus.CREATED).build(); // 201 created
-		}
-		else {
+		} else {
 			return ResponseEntity.status(HttpStatus.CONFLICT).build(); // 409 Conflict
 		}
 	}
@@ -99,30 +97,29 @@ public class PmsSkuInfoRestController {
 	 */
 	@PutMapping("/{skuId}")
 	protected ResponseEntity<Void> save(@PathVariable Long skuId, @RequestBody PmsSkuInfoDTO pmsSkuInfoDTO) {
-    	logger.debug("REST : PUT - save");
+		logger.debug("REST : PUT - save");
 		service.save(skuId, pmsSkuInfoDTO);
 		return ResponseEntity.ok().build(); // OK, updated or created
 	}
 
 	/**
- 	 * Update if exists 
+	 * Update if exists
 	 *
 	 * @param pmsSkuInfoDTO
 	 * @return 200 updated or 404 not found
 	 */
 	@PutMapping("")
 	protected ResponseEntity<Void> update(@RequestBody PmsSkuInfoDTO pmsSkuInfoDTO) {
-    	logger.debug("REST : PUT - update");
-		if ( service.update(pmsSkuInfoDTO) ) {
+		logger.debug("REST : PUT - update");
+		if (service.update(pmsSkuInfoDTO)) {
 			return ResponseEntity.ok().build(); // 200 OK, found and updated
-		}
-		else {
+		} else {
 			return ResponseEntity.notFound().build(); // 404 Not found = "not updated"
 		}
 	}
 
 	/**
- 	 * Partial update for the given PK (if it exists )
+	 * Partial update for the given PK (if it exists )
 	 *
 	 * @param skuId
 	 * @param pmsSkuInfoDTO
@@ -130,30 +127,34 @@ public class PmsSkuInfoRestController {
 	 */
 	@PatchMapping("/{skuId}")
 	protected ResponseEntity<Void> partialUpdate(@PathVariable Long skuId, @RequestBody PmsSkuInfoDTO pmsSkuInfoDTO) {
-    	logger.debug("REST : PATCH - partialUpdate");
-    	if ( service.partialUpdate(skuId, pmsSkuInfoDTO) ) {
-    		return ResponseEntity.ok().build(); // OK, found and updated
-    	}
-    	else {
+		logger.debug("REST : PATCH - partialUpdate");
+		if (service.partialUpdate(skuId, pmsSkuInfoDTO)) {
+			return ResponseEntity.ok().build(); // OK, found and updated
+		} else {
 			return ResponseEntity.notFound().build(); // 404 Not found = "not updated"
-    	}
+		}
 	}
 
 	/**
-	 * Delete by PK 
+	 * Delete by PK
 	 *
 	 * @param skuId
 	 * @return 204 deleted or 404 not found
 	 */
 	@DeleteMapping("/{skuId}")
 	protected ResponseEntity<Void> deleteById(@PathVariable Long skuId) {
-    	logger.debug("REST : DELETE - deleteById");
-		if ( service.deleteById(skuId) ) {
+		logger.debug("REST : DELETE - deleteById");
+		if (service.deleteById(skuId)) {
 			return ResponseEntity.noContent().build(); // 204 No content = "deleted"
-		}
-		else {
+		} else {
 			return ResponseEntity.notFound().build(); // 404 Not found = "not deleted"
 		}
+	}
+
+	@GetMapping("/searchSku/{userInputedText}")
+	public ResponseEntity<List<PmsSkuInfo>> searchSkuByUserInputedText(@PathVariable String userInputedText) {
+		List<PmsSkuInfo> list = service.searchSkuByUserInputedText(userInputedText);
+		return ResponseEntity.ok(list);
 	}
 
 }

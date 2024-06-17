@@ -2,6 +2,20 @@
   "configurations": [
     {
       "type": "java",
+      "name": "SpringBootStarter",
+      "request": "launch",
+      "mainClass": "com._yzhheng.SpringBootStarter",
+      "projectName": "gulimall-order"
+    },
+    {
+      "type": "java",
+      "name": "GulimallCartApplication",
+      "request": "launch",
+      "mainClass": "com._yzhheng.GulimallCartApplication",
+      "projectName": "gulimall-cart"
+    },
+    {
+      "type": "java",
       "name": "GulimallMemberApplication",
       "request": "launch",
       "mainClass": "com._yzhheng.gulimallmember.GulimallMemberApplication",
