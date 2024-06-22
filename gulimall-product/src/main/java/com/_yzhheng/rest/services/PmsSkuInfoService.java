@@ -9,10 +9,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com._yzhheng.persistence.entities.PmsSkuImages;
@@ -24,6 +30,7 @@ import com._yzhheng.persistence.repositories.PmsSkuInfoRepository;
 import com._yzhheng.persistence.repositories.PmsSpuInfoDescRepository;
 import com._yzhheng.rest.databaseDto.AttrDto;
 import com._yzhheng.rest.databaseDto.PmsSkuItemSaleAttrVo;
+import com._yzhheng.rest.databaseDto.SaleVoWihtSkuIds;
 import com._yzhheng.rest.databaseDto.SpuItemAttrGroupDto;
 import com._yzhheng.rest.dto.PmsSkuInfoDTO;
 import com._yzhheng.rest.dto.databaseSpuDto;
@@ -52,6 +59,9 @@ public class PmsSkuInfoService extends GenericService<PmsSkuInfo, PmsSkuInfoDTO>
 	private final PmsSpuInfoDescRepository SpuInfoDescRepo;
 
 	private final PmsAttrGroupRepository attrGroupRepository;
+
+	@Autowired
+	ThreadPoolExecutor executor;
 
 	/**
 	 * Constructor (usable for Dependency Injection)
@@ -185,40 +195,91 @@ public class PmsSkuInfoService extends GenericService<PmsSkuInfo, PmsSkuInfoDTO>
 		}
 	}
 
-	public SkuItemVo item(Long skuId) {
+	public SkuItemVo item(Long skuId) throws InterruptedException, ExecutionException {
+		// TODO: clean the commented part in completableFuture task
 		SkuItemVo skuItemVo = new SkuItemVo();
-		PmsSkuInfo info = repository.findById(skuId).get();
-		skuItemVo.setInfo(info);
+		// 1. sku 基本信息获取
+		CompletableFuture<PmsSkuInfo> infoFuture = CompletableFuture.supplyAsync(() -> {
+			PmsSkuInfo info = repository.findById(skuId).get();
+			skuItemVo.setInfo(info);
+			return info;
+		}, executor);
+		// PmsSkuInfo info = repository.findById(skuId).get();
+		// skuItemVo.setInfo(info);
 		// System.out.println(pmsSpuInfoDesc.getDecript());
-		List<PmsSkuImages> images = SkuImageRepo.getImagesBySkuId(skuId);
-		System.out.println(images.getFirst().getImgUrl());
-		skuItemVo.setImages(images);
-		PmsSpuInfoDesc pmsSpuInfoDesc = SpuInfoDescRepo.findById(info.getSpuId()).get();
-		skuItemVo.setDesc(pmsSpuInfoDesc);
 
-		System.out.println(pmsSpuInfoDesc.getDecript());
+		// 2. sku 的图片基本信息
+		CompletableFuture<Void> skuImageFuture = CompletableFuture.runAsync(() -> {
+			List<PmsSkuImages> images = SkuImageRepo.getImagesBySkuId(skuId);
+			// System.out.println(images.getFirst().getImgUrl());
+			skuItemVo.setImages(images);
+		}, executor);
+		// List<PmsSkuImages> images = SkuImageRepo.getImagesBySkuId(skuId);
+		// System.out.println(images.getFirst().getImgUrl());
+		// skuItemVo.setImages(images);
+
+		// 3. 获取spu的介绍
+		CompletableFuture<Void> spuDescriptionFuture = infoFuture.thenAcceptAsync((res) -> {
+			PmsSpuInfoDesc pmsSpuInfoDesc = SpuInfoDescRepo.findById(res.getSpuId()).get();
+			skuItemVo.setDesc(pmsSpuInfoDesc);
+		}, executor);
+		// PmsSpuInfoDesc pmsSpuInfoDesc =
+		// SpuInfoDescRepo.findById(info.getSpuId()).get();
+		// skuItemVo.setDesc(pmsSpuInfoDesc);
+
+		// System.out.println(pmsSpuInfoDesc.getDecript());
 		// List<SpuItemAttrGroupDto> groupAttrs =
 		// attrGroupRepository.getAttrGroupWithAttrsBySpuId(info.getSpuId(),
 		// info.getCatalogId());
 
-		// spu attribute
-		List<Object[]> results = attrGroupRepository.findAttrGroupWithAttrsBySpuId(info.getSpuId(),
-				info.getCatalogId());
+		// 4. spu规格参数信息
+		CompletableFuture<Void> spuSpecificationFuture = infoFuture.thenAcceptAsync((res -> {
+			List<Object[]> results = attrGroupRepository.findAttrGroupWithAttrsBySpuId(res.getSpuId(),
+					res.getCatalogId());
 
-		Map<String, SpuItemAttrGroupDto> groupMap = new HashMap<>();
-		for (Object[] result : results) {
-			String groupName = (String) result[0];
-			Long attrId = (Long) result[1];
-			String attrName = (String) result[2];
-			String attrValue = (String) result[3];
+			Map<String, SpuItemAttrGroupDto> groupMap = new HashMap<>();
+			for (Object[] result : results) {
+				String groupName = (String) result[0];
+				Long attrId = (Long) result[1];
+				String attrName = (String) result[2];
+				String attrValue = (String) result[3];
 
-			groupMap.putIfAbsent(groupName, new SpuItemAttrGroupDto(groupName, new ArrayList<>()));
-			groupMap.get(groupName).getAttrs().add(new AttrDto(attrId, attrName, attrValue));
-		}
+				groupMap.putIfAbsent(groupName, new SpuItemAttrGroupDto(groupName, new ArrayList<>()));
+				groupMap.get(groupName).getAttrs().add(new AttrDto(attrId, attrName, attrValue));
+			}
 
-		List<SpuItemAttrGroupDto> groupAttrs = new ArrayList<>(groupMap.values());
+			List<SpuItemAttrGroupDto> groupAttrs = new ArrayList<>(groupMap.values());
 
-		skuItemVo.setGroupAttrs(groupAttrs);
+			skuItemVo.setGroupAttrs(groupAttrs);
+
+			// for (SpuItemAttrGroupDto g : groupAttrs) {
+			// System.out.print(g.getGroupName() + " ");
+			// for (AttrDto g2 : g.getAttrs()) {
+			// System.out.print(g2.getAttrName() + " " + g2.getAttrValue());
+			// }
+			// System.out.println();
+			// }
+		}), executor);
+		// List<Object[]> results =
+		// attrGroupRepository.findAttrGroupWithAttrsBySpuId(info.getSpuId(),
+		// info.getCatalogId());
+
+		// Map<String, SpuItemAttrGroupDto> groupMap = new HashMap<>();
+		// for (Object[] result : results) {
+		// String groupName = (String) result[0];
+		// Long attrId = (Long) result[1];
+		// String attrName = (String) result[2];
+		// String attrValue = (String) result[3];
+
+		// groupMap.putIfAbsent(groupName, new SpuItemAttrGroupDto(groupName, new
+		// ArrayList<>()));
+		// groupMap.get(groupName).getAttrs().add(new AttrDto(attrId, attrName,
+		// attrValue));
+		// }
+
+		// List<SpuItemAttrGroupDto> groupAttrs = new ArrayList<>(groupMap.values());
+
+		// skuItemVo.setGroupAttrs(groupAttrs);
 
 		// for (SpuItemAttrGroupDto g : groupAttrs) {
 		// System.out.print(g.getGroupName() + " ");
@@ -228,23 +289,63 @@ public class PmsSkuInfoService extends GenericService<PmsSkuInfo, PmsSkuInfoDTO>
 		// System.out.println();
 		// }
 
-		List<Object[]> saleAttrVos = repository.getSaleAttrBySpuId(info.getSpuId());
-		List<PmsSkuItemSaleAttrVo> vo = new ArrayList<>();
-		for (Object[] o : saleAttrVos) {
-			Long attrId = (Long) o[0];
-			String attrName = (String) o[1];
-			String attrValues = (String) o[2];
-			vo.add(new PmsSkuItemSaleAttrVo(attrId, attrName, attrValues));
-		}
-		for (PmsSkuItemSaleAttrVo v : vo) {
-			System.out.println(v.getAttrName() + " " + v.getAttrValues());
-		}
-		skuItemVo.setSaleAttr(vo);
+		// 5. spu销售属性
+		CompletableFuture<Void> spuSaleAttributeFuture = infoFuture.thenAcceptAsync((res) -> {
+			List<Object[]> saleAttrVos = repository.getSaleAttrBySpuId(res.getSpuId());
+			List<PmsSkuItemSaleAttrVo> vo = new ArrayList<>();
+			Map<String, List<SaleVoWihtSkuIds>> map = new HashMap<>();
+			for (Object[] o : saleAttrVos) {
+				// Long attrId = (Long) o[0];
+				String attrName = (String) o[0];
+				String attrValues = (String) o[1];
+				String skuIds = (String) o[2];
+				map.putIfAbsent(attrName, new ArrayList<>());
+				if (map.containsKey(attrName)) {
+					map.get(attrName).add(new SaleVoWihtSkuIds(attrValues, skuIds));
+				}
+				// vo.add(new PmsSkuItemSaleAttrVo(attrName, attrValues, skuIds));
+			}
+			for (var entry : map.entrySet()) {
+				vo.add(new PmsSkuItemSaleAttrVo(entry.getKey(), entry.getValue()));
+				// System.out.println(entry.getKey() + "/" + entry.getValue());
+			}
+			skuItemVo.setSaleAttr(vo);
+		}, executor);
+		// List<Object[]> saleAttrVos = repository.getSaleAttrBySpuId(info.getSpuId());
+		// List<PmsSkuItemSaleAttrVo> vo = new ArrayList<>();
+		// Map<String, List<SaleVoWihtSkuIds>> map = new HashMap<>();
+		// for (Object[] o : saleAttrVos) {
+		// // Long attrId = (Long) o[0];
+		// String attrName = (String) o[0];
+		// String attrValues = (String) o[1];
+		// String skuIds = (String) o[2];
+		// map.putIfAbsent(attrName, new ArrayList<>());
+		// if (map.containsKey(attrName)) {
+		// map.get(attrName).add(new SaleVoWihtSkuIds(attrValues, skuIds));
+		// }
+		// // vo.add(new PmsSkuItemSaleAttrVo(attrName, attrValues, skuIds));
+		// }
+		// for (var entry : map.entrySet()) {
+		// vo.add(new PmsSkuItemSaleAttrVo(entry.getKey(), entry.getValue()));
+		// // System.out.println(entry.getKey() + "/" + entry.getValue());
+		// }
+		// // List<PmsSkuItemSaleAttrVo> testt = new ArrayList<>(map.entrySet());
+		// // foreach(SaleVoWihtSkuIds test: map.values()){
+
+		// // }
+		// for (PmsSkuItemSaleAttrVo v : vo) {
+		// System.out.println(v.getAttrName() + " " + v.getAttrValues());
+		// }
+		// skuItemVo.setSaleAttr(vo);
+
+		// 阻塞等待，让主线程等待任务完成，一定要使用.get()方法
+		CompletableFuture.allOf(spuDescriptionFuture, spuSpecificationFuture, spuSaleAttributeFuture, skuImageFuture)
+				.get();
 		return skuItemVo;
 	}
 
-	public List<PmsSkuInfo> searchSkuByUserInputedText(String userInputedText) {
-		List<PmsSkuInfo> list = repository.searchSkusBySku_NameInputedByUser(userInputedText).get();
+	public Page<PmsSkuInfo> searchSkuByUserInputedText(Pageable pageable, String userInputedText) {
+		Page<PmsSkuInfo> list = repository.searchSkusBySku_NameInputedByUser(pageable, userInputedText);
 		return list;
 	}
 }

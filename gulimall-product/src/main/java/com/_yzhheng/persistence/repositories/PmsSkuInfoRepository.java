@@ -7,6 +7,8 @@ package com._yzhheng.persistence.repositories;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -34,11 +36,11 @@ public interface PmsSkuInfoRepository extends JpaRepository<PmsSkuInfo, Long> {
 	@Query(value = "SELECT * FROM pms_sku_info where spu_id = :spuId", nativeQuery = true)
 	Optional<List<PmsSkuInfo>> getAllSkuBySpuId(Long spuId);
 
-	@Query(value = "select ssav.attr_id attr_id, ssav.attr_name attr_name, group_concat(DISTINCT ssav.attr_value) attr_values FROM pms_sku_info info LEFT JOIN pms_sku_sale_attr_value ssav ON ssav.sku_id = info.sku_id WHERE info.spu_id = :spuId GROUP BY ssav.attr_id, ssav.attr_name", nativeQuery = true)
+	@Query(value = "select ssav.attr_name attr_name, ssav.attr_value, group_concat(info.sku_id) skuIds FROM pms_sku_info info LEFT JOIN pms_sku_sale_attr_value ssav ON ssav.sku_id = info.sku_id WHERE info.spu_id = :spuId GROUP BY ssav.attr_id, ssav.attr_name, ssav.attr_value", nativeQuery = true)
 	List<Object[]> getSaleAttrBySpuId(Long spuId);
 
 	@Query(value = "select * from pms_sku_info where MATCH(sku_name) AGAINST (:sku_name)", nativeQuery = true)
-	Optional<List<PmsSkuInfo>> searchSkusBySku_NameInputedByUser(String sku_name);
+	Page<PmsSkuInfo> searchSkusBySku_NameInputedByUser(Pageable pageable, String sku_name);
 	// Insert specific finders here
 
 	// List<PmsSkuInfo> findByXxx(String xxx);
