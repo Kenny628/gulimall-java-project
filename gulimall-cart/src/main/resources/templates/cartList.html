@@ -85,35 +85,37 @@
 
 				<div class="One_ShopCon">
 					<ul>
-						<li each="item:${cart.getItems()}">
+						<li th:each="item:${cart.getItems()}">
 							<div> </div>
 
 							<div>
 								<ol>
-									<li><input type="checkbox" class="check" value="${item.skuId}" onchange="checkSku(this)" checked="${item.check}" /></li>
+									<!-- <li><input type="checkbox" class="check" value="${item.skuId}" onchange="checkSku(this)" checked="${item.check}" /></li>
+									  -->
+									  <li><input type="checkbox" th:attr="skuId=${item.skuId}" class="itemCheck" th:checked="${item.checked}"></li>
 									<li>
-										<dt><img  src="http://192.168.56.1:9001/static/cart/img/shop1.jpg" alt=""></dt>
+										<dt><img th:src="${item.image}" alt=""></dt>
 										<dd onclick="'toItem('+${item.skuId}+')'"> 
 											<p>
-												<span text="${item.title}">TCL 55A950C 55英寸32核</span>
+												<span th:text="${item.title}">TCL 55A950C 55英寸32核</span>
 											</p>
 										</dd>
 									</li>
 									<li>
-										<p class="dj" text="'￥'+${item.price}">4599.00</p>
+										<p class="dj" th:text="'￥'+${item.price}">4599.00</p>
 									</li>
 									<li>
-										<p attr="skuId=${item.skuId}">
+										<p th:attr="skuId=${item.skuId}">
 											<span class="countOpsBtn">-</span>
-											<span class="countOpsNum" text="${item.count}">5</span>
+											<span class="countOpsNum" th:text="${item.count}">5</span>
 											<span class="countOpsBtn">+</span>
 										</p>
 									</li>
 									<li style="font-weight:bold">
-										<p class="zj" text="'￥'+${item.totalPrice}">￥22995.00</p>
+										<p class="zj" th:text="'￥'+${item.totalPrice}">￥22995.00</p>
 									</li>
 									<li>
-										<p class="deleteBtn" attr="skuId=${item.skuId}">删除</p>
+										<p class="deleteBtn" th:attr="skuId=${item.skuId}">删除</p>
 									</li>
 								</ol>
 							</div>
@@ -178,7 +180,7 @@
 					</div>
 					<div>
 						<ol>
-							<li>总价:<span style="color:#e64346;font-weight:bold;font-size:16px;" class="fnt">￥0.00</span> </li>
+							<li>总价:<span style="color:#e64346;font-weight:bold;font-size:16px;" class="fnt">￥[[${#numbers.formatDecimal(cart.totalAmount,2,3)}]]</span></li>
 
 						</ol>
 					</div>
@@ -805,12 +807,16 @@
 			$(this).children("p").children("img").attr("src", "img/one_mian_gwc1.png")
 		})
 
-
+		$(".itemCheck").click(function () {
+        const skuId = $(this).attr("skuId");
+        const check = $(this).prop("checked");
+        location.href = "http://cart.gulimall.com:8600/checkItem?skuId=" + skuId + "&check=" + (check ? 1 : 0);
+    });
 		//改变数量
 		$(".countOpsBtn").click(function () {
 			const skuId=$(this).parent().attr("skuId");
 			const num = $(this).parent().find(".countOpsNum").text();
-			location.href = "http://cart.gulimall.com/countItem?skuId=" + skuId + "&num=" + num;
+			location.href = "http://cart.gulimall.com:8600/countItem?skuId=" + skuId + "&num=" + num;
 		})
 
 		let deleteSkuId=0;
@@ -819,7 +825,7 @@
 		})
 
 		function deleteItem() {
-			location.href="http://cart.gulimall.com/deleteItem?skuId=" + deleteSkuId;
+			location.href="http://cart.gulimall.com:8600/deleteItem?skuId=" + deleteSkuId;
 		}
 	</script>
 </html>

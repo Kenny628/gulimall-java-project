@@ -4,36 +4,46 @@
  */
 package com._yzhheng.persistence.repositories;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import com._yzhheng.persistence.entities.PmsSkuSaleAttrValue;
 
 /**
- * Spring Data JPA repository for entity "PmsSkuSaleAttrValue" <br> 
+ * Spring Data JPA repository for entity "PmsSkuSaleAttrValue" <br>
  * 
  * This repository extends PagingAndSortingRepository interface <br>
  * so it provides by default all the basic CRUD operations : <br>
- *   findById, findAll, save, delete, etc <br> 
+ * findById, findAll, save, delete, etc <br>
  * with pagination and sorting : <br>
- *   findAll(Pageable), findAll(Sort)<br>
+ * findAll(Pageable), findAll(Sort)<br>
  * 
  * This repository can be extended by adding specific "finders" methods<br>
- * To do so, see the "predicates conventions" for "derived query methods" in Spring Data documentation
+ * To do so, see the "predicates conventions" for "derived query methods" in
+ * Spring Data documentation
  * 
  * @author Telosys
  *
  */
+@Repository
 public interface PmsSkuSaleAttrValueRepository extends JpaRepository<PmsSkuSaleAttrValue, Long> {
 
-	// Insert specific finders here 
+	@Query(value = "SELECT concat(attr_name,':',attr_value) FROM pms_sku_sale_attr_value where sku_id = :sku_id", nativeQuery = true)
+	List<String> getSkuSaleAttrValues(Long sku_id);
 
-	//List<PmsSkuSaleAttrValue> findByXxx(String xxx);
+	// Insert specific finders here
 
-	//List<PmsSkuSaleAttrValue> findByXxxStartingWith(String xxx);
+	// List<PmsSkuSaleAttrValue> findByXxx(String xxx);
 
-	//List<PmsSkuSaleAttrValue> findByXxxContaining(String xxx);
+	// List<PmsSkuSaleAttrValue> findByXxxStartingWith(String xxx);
 
-	//List<PmsSkuSaleAttrValue> findByYyy(BigDecimal yyy);
+	// List<PmsSkuSaleAttrValue> findByXxxContaining(String xxx);
 
-	//List<PmsSkuSaleAttrValue> findByXxxContainingAndYyy(String xxx, BigDecimal yyy);
+	// List<PmsSkuSaleAttrValue> findByYyy(BigDecimal yyy);
+
+	// List<PmsSkuSaleAttrValue> findByXxxContainingAndYyy(String xxx, BigDecimal
+	// yyy);
 }

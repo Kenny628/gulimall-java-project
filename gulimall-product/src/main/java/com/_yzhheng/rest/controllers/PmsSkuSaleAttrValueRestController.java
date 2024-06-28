@@ -23,15 +23,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com._yzhheng.rest.dto.PmsSkuSaleAttrValueDTO;
 import com._yzhheng.rest.services.PmsSkuSaleAttrValueService;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping(value = "api/v1/PmsSkuSaleAttrValue", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PmsSkuSaleAttrValueRestController {
 
 	private static final Logger logger = LoggerFactory.getLogger(PmsSkuSaleAttrValueRestController.class);
-	
-	private PmsSkuSaleAttrValueService service ; // injected
-	
+
+	private PmsSkuSaleAttrValueService service; // injected
+
 	/**
 	 * Constructor (usable for Dependency Injection)
 	 *
@@ -41,7 +42,7 @@ public class PmsSkuSaleAttrValueRestController {
 		super();
 		this.service = service;
 	}
-    
+
 	/**
 	 * Get ALL
 	 *
@@ -49,43 +50,40 @@ public class PmsSkuSaleAttrValueRestController {
 	 */
 	@GetMapping("")
 	protected ResponseEntity<List<PmsSkuSaleAttrValueDTO>> findAll() {
-    	logger.debug("REST : GET - findAll");
-    	List<PmsSkuSaleAttrValueDTO> list = service.findAll();
-    	return ResponseEntity.ok(list); // always 200
-    }
-    
-    /**
-     * Get ONE identified by the given PK
+		logger.debug("REST : GET - findAll");
+		List<PmsSkuSaleAttrValueDTO> list = service.findAll();
+		return ResponseEntity.ok(list); // always 200
+	}
+
+	/**
+	 * Get ONE identified by the given PK
 	 *
 	 * @param id
-     * @return 200 or 404 
-     */
-    @GetMapping("/{id}")
-    protected ResponseEntity<PmsSkuSaleAttrValueDTO> findById(@PathVariable Long id) {
-    	logger.debug("REST : GET - findById");
-    	PmsSkuSaleAttrValueDTO pmsSkuSaleAttrValueDTO = service.findById(id);
-		if ( pmsSkuSaleAttrValueDTO != null ) {
+	 * @return 200 or 404
+	 */
+	@GetMapping("/{id}")
+	protected ResponseEntity<PmsSkuSaleAttrValueDTO> findById(@PathVariable Long id) {
+		logger.debug("REST : GET - findById");
+		PmsSkuSaleAttrValueDTO pmsSkuSaleAttrValueDTO = service.findById(id);
+		if (pmsSkuSaleAttrValueDTO != null) {
 			return ResponseEntity.ok(pmsSkuSaleAttrValueDTO); // 200 OK, found
-		}
-		else {
+		} else {
 			return ResponseEntity.notFound().build(); // 404 Not found
-		}		
-    }
+		}
+	}
 
-    
 	/**
- 	 * Create if doesn't exist 
+	 * Create if doesn't exist
 	 *
 	 * @param pmsSkuSaleAttrValueDTO
 	 * @return 201 created or 409 conflict
 	 */
 	@PostMapping("")
 	protected ResponseEntity<Void> create(@RequestBody PmsSkuSaleAttrValueDTO pmsSkuSaleAttrValueDTO) {
-    	logger.debug("REST : POST - create");
-		if ( service.create(pmsSkuSaleAttrValueDTO) ) {
+		logger.debug("REST : POST - create");
+		if (service.create(pmsSkuSaleAttrValueDTO)) {
 			return ResponseEntity.status(HttpStatus.CREATED).build(); // 201 created
-		}
-		else {
+		} else {
 			return ResponseEntity.status(HttpStatus.CONFLICT).build(); // 409 Conflict
 		}
 	}
@@ -98,61 +96,70 @@ public class PmsSkuSaleAttrValueRestController {
 	 * @return 200 updated or created
 	 */
 	@PutMapping("/{id}")
-	protected ResponseEntity<Void> save(@PathVariable Long id, @RequestBody PmsSkuSaleAttrValueDTO pmsSkuSaleAttrValueDTO) {
-    	logger.debug("REST : PUT - save");
+	protected ResponseEntity<Void> save(@PathVariable Long id,
+			@RequestBody PmsSkuSaleAttrValueDTO pmsSkuSaleAttrValueDTO) {
+		logger.debug("REST : PUT - save");
 		service.save(id, pmsSkuSaleAttrValueDTO);
 		return ResponseEntity.ok().build(); // OK, updated or created
 	}
 
 	/**
- 	 * Update if exists 
+	 * Update if exists
 	 *
 	 * @param pmsSkuSaleAttrValueDTO
 	 * @return 200 updated or 404 not found
 	 */
 	@PutMapping("")
 	protected ResponseEntity<Void> update(@RequestBody PmsSkuSaleAttrValueDTO pmsSkuSaleAttrValueDTO) {
-    	logger.debug("REST : PUT - update");
-		if ( service.update(pmsSkuSaleAttrValueDTO) ) {
+		logger.debug("REST : PUT - update");
+		if (service.update(pmsSkuSaleAttrValueDTO)) {
 			return ResponseEntity.ok().build(); // 200 OK, found and updated
-		}
-		else {
+		} else {
 			return ResponseEntity.notFound().build(); // 404 Not found = "not updated"
 		}
 	}
 
 	/**
- 	 * Partial update for the given PK (if it exists )
+	 * Partial update for the given PK (if it exists )
 	 *
 	 * @param id
 	 * @param pmsSkuSaleAttrValueDTO
 	 * @return 200 updated or 404 not found
 	 */
 	@PatchMapping("/{id}")
-	protected ResponseEntity<Void> partialUpdate(@PathVariable Long id, @RequestBody PmsSkuSaleAttrValueDTO pmsSkuSaleAttrValueDTO) {
-    	logger.debug("REST : PATCH - partialUpdate");
-    	if ( service.partialUpdate(id, pmsSkuSaleAttrValueDTO) ) {
-    		return ResponseEntity.ok().build(); // OK, found and updated
-    	}
-    	else {
+	protected ResponseEntity<Void> partialUpdate(@PathVariable Long id,
+			@RequestBody PmsSkuSaleAttrValueDTO pmsSkuSaleAttrValueDTO) {
+		logger.debug("REST : PATCH - partialUpdate");
+		if (service.partialUpdate(id, pmsSkuSaleAttrValueDTO)) {
+			return ResponseEntity.ok().build(); // OK, found and updated
+		} else {
 			return ResponseEntity.notFound().build(); // 404 Not found = "not updated"
-    	}
+		}
 	}
 
 	/**
-	 * Delete by PK 
+	 * Delete by PK
 	 *
 	 * @param id
 	 * @return 204 deleted or 404 not found
 	 */
 	@DeleteMapping("/{id}")
 	protected ResponseEntity<Void> deleteById(@PathVariable Long id) {
-    	logger.debug("REST : DELETE - deleteById");
-		if ( service.deleteById(id) ) {
+		logger.debug("REST : DELETE - deleteById");
+		if (service.deleteById(id)) {
 			return ResponseEntity.noContent().build(); // 204 No content = "deleted"
-		}
-		else {
+		} else {
 			return ResponseEntity.notFound().build(); // 404 Not found = "not deleted"
+		}
+	}
+
+	@GetMapping("/getSkuAttrCombo/{skuid}")
+	public ResponseEntity<List<String>> getSkuSaleAttrValues(@PathVariable Long skuid) {
+		List<String> list = service.getSkuSaleAttrValues(skuid);
+		if (list != null) {
+			return ResponseEntity.ok(list); // 200 OK, found
+		} else {
+			return ResponseEntity.notFound().build(); // 404 Not found
 		}
 	}
 

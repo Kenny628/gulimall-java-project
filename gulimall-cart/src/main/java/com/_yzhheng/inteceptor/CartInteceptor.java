@@ -5,7 +5,6 @@ import java.util.UUID;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-import org.thymeleaf.util.StringUtils;
 
 import com._yzhheng.vo.UserInfoTo;
 
@@ -13,11 +12,13 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.util.StringUtils;
 
 /*
  * 在执行目标方法前，判断用户的登录状态，并封装封装给controller目标请求
  */
-// TODO: Compare @Component and @Bean   
+// TODO: Compare @Component and @Bean
+@Component
 public class CartInteceptor implements HandlerInterceptor {
 
     public static ThreadLocal<UserInfoTo> threadLocal = new ThreadLocal<>();
@@ -31,8 +32,8 @@ public class CartInteceptor implements HandlerInterceptor {
         HttpSession session = request.getSession();
 
         String username = (String) session.getAttribute("loginUser");
-
-        if (username == null || username.equals("")) {
+        // System.out.println("StringUtils: " + !StringUtils.isEmpty(username));
+        if (username != null || !StringUtils.isEmpty(username)) {
             userInfoTo.setUsername(username);
         }
 
@@ -41,16 +42,23 @@ public class CartInteceptor implements HandlerInterceptor {
         if (cookies != null && cookies.length > 0) {
             for (Cookie cookie : cookies) {
                 String name = cookie.getName();
+                System.out.println("Cookies Name: " + name);
                 if (name.equals("user-key")) {
-                    userInfoTo.setUserkey(cookie.getAttribute(name));
+                    System.out.println("UserKeyTrue");
+                    userInfoTo.setUserkey(cookie.getValue());
+                    // TODO: cookie.getAttribute(name)
+                    System.out.println("RetrievedCookieName" + cookie.getValue());
                     userInfoTo.setTempUser(true);
+
+                    System.out.println("UserInfoToUserKey: " + userInfoTo.getUserkey());
                 }
             }
         }
-
+        System.out.println("UserInfoToBoolean" + StringUtils.isEmpty(userInfoTo.getUserkey()));
         if (StringUtils.isEmpty(userInfoTo.getUserkey())) {
             String uuid = UUID.randomUUID().toString();
             userInfoTo.setUserkey(uuid);
+            System.out.println("UserInfoToUserTempKey: " + userInfoTo.getUserkey());
         }
 
         threadLocal.set(userInfoTo);
