@@ -1,5 +1,6 @@
 package com._yzhheng.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -157,6 +158,22 @@ public class CartService {
         String str = (String) cartOps.get(skuId.toString());
         CartItem cartItemVo = JSON.parseObject(str, CartItem.class);
         return cartItemVo;
+    }
+
+    public List<CartItem> getCurrentUserCartItems(String username) {
+        // UserInfoTo userInfoTo = CartInteceptor.threadLocal.get();
+
+        String cartKey = CART_PREFIX + username;
+        List<CartItem> cartItems = getCartItems(cartKey);
+
+        List<CartItem> listCartItems = cartItems.stream().filter(item -> item.getChecked()).map(item -> {
+            BigDecimal price = productFeignService.getPrice(item.getSkuId()).getBody();
+            item.setPrice(price);
+            return item;
+        }).collect(Collectors.toList());
+
+        return listCartItems;
+
     }
 
     // TODO: Learn BoundHashOperations and why it return <String, Object, Object>

@@ -24,7 +24,7 @@
 					</ul>
 					<ul class="header-right">
 						<li>
-							<a href="http://auth.gulimall.com/login.html">你好，[[${session.loginUser==null?"请登录":session.loginUser}]]</a>
+							<a href="http://auth.gulimall.com:8600/login.html">你好，[[${session.loginUser.username==null?"请登录":session.loginUser.username}]]</a>
 						</li>
 						<li>
 							<a href="http://auth.gulimall.com/reg.html" class="li_2">免费注册</a>
@@ -48,7 +48,7 @@
 			<div class="one_sousuo">
 				<div class="one_search_top">
 					<div class="one_top_left">
-						<a href="http://192.168.56.1:9001/static/cart/" class="one_left_logo"><img src="http://192.168.56.1:9001/static/cart/img/logo1.jpg"></a>
+						<a href="http://gulimall.com:8600" class="one_left_logo"><img src="http://192.168.56.1:9001/static/cart/img/logo1.jpg"></a>
 						<a href="#" class="one_left_link">购物车</a>
 					</div>
 					<div class="one_top_right">
@@ -56,10 +56,10 @@
 						<input type="button" value="搜索" class="one_right_btn">
 					</div>
 				</div>
-				<div class="one_search_load" if="${userId}==null">
+				<div class="one_search_load" th:if="${session.loginUser==null}">
 					<img src="http://192.168.56.1:9001/static/cart/img/shop_07.jpg" class="one_load_wraing">
 					<span>您还没有登录！登录后购物车的商品将保存到您账号中</span>
-					<a href="#"><input type="button" onclick="login()" value="立即登录" class="one_load_btn"></a>
+					<a href="http:cart.gulimall.com:8600/login.html"><input type="button" onclick="login()" value="立即登录" class="one_load_btn"></a>
 				</div>
 			</div>
 		</div>
@@ -180,7 +180,7 @@
 					</div>
 					<div>
 						<ol>
-							<li>总价:<span style="color:#e64346;font-weight:bold;font-size:16px;" class="fnt">￥[[${#numbers.formatDecimal(cart.totalAmount,2,3)}]]</span></li>
+							<li>总价:<span style="color:#e64346;font-weight:bold;font-size:16px;" class="fnt">￥[[${#numbers.formatDecimal(cart.totalAmount,1,2)}]]</span></li>
 
 						</ol>
 					</div>
@@ -252,7 +252,7 @@
 	<script src="http://192.168.56.1:9001/static/cart/js/index.js" charset="utf-8"></script>
 	<script type="text/javascript">
 		function toTrade() {
-			window.location.href = "http://order.gulimall.com/toTrade";
+			window.location.href = "http://order.gulimall.com:8600/toTrade";
 		}
 
 		function toItem(skuId) {

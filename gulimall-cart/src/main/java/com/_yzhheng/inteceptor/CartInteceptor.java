@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import com._yzhheng.vo.UmsMemberDTO;
 import com._yzhheng.vo.UserInfoTo;
 
 import jakarta.servlet.http.Cookie;
@@ -30,8 +31,9 @@ public class CartInteceptor implements HandlerInterceptor {
         UserInfoTo userInfoTo = new UserInfoTo();
 
         HttpSession session = request.getSession();
-
-        String username = (String) session.getAttribute("loginUser");
+        // TODO: 不同feign不同sesion
+        UmsMemberDTO member = (UmsMemberDTO) session.getAttribute("loginUser");
+        String username = member.getUsername();
         // System.out.println("StringUtils: " + !StringUtils.isEmpty(username));
         if (username != null || !StringUtils.isEmpty(username)) {
             userInfoTo.setUsername(username);

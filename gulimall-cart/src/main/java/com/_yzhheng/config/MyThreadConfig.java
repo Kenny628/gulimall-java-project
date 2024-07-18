@@ -10,9 +10,6 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 线程池的配置
- * 
- * @author starsea
- * @date 2022-04-28
  */
 // @EnableConfigurationProperties(ThreadPoolConfigProperties.class)//可以替代不写Component注解
 @Configuration

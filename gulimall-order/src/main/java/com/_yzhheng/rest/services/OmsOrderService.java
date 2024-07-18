@@ -4,23 +4,60 @@
  */
 package com._yzhheng.rest.services;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
-
+import org.hibernate.id.uuid.UuidGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import com._yzhheng.feign.MemberFeignService;
+import com._yzhheng.feign.ProductFeignService;
+import com._yzhheng.feign.WareFeignService;
+import com._yzhheng.constant.OrderStatusEnum;
+import com._yzhheng.feign.CartFeignService;
+import com._yzhheng.inteceptor.LoginUserInteceptor;
 import com._yzhheng.persistence.entities.OmsOrder;
+import com._yzhheng.persistence.entities.OmsOrderItem;
 import com._yzhheng.persistence.repositories.OmsOrderRepository;
 import com._yzhheng.rest.dto.OmsOrderDTO;
+import com._yzhheng.rest.dto.OmsOrderItemDTO;
 import com._yzhheng.rest.services.commons.GenericService;
+import com._yzhheng.snowflake.SnowFlakeShortUrl;
+import com._yzhheng.to.OrderCreateTo;
+import com._yzhheng.vo.MemberAddressVo;
+import com._yzhheng.vo.OrderConfirmVo;
+import com._yzhheng.vo.OrderItemVo;
+import com._yzhheng.vo.OrderSubmitVo;
+import com._yzhheng.vo.OrderVo;
+import com._yzhheng.vo.SpuInfoVo;
+import com._yzhheng.vo.SubmitOrderResponseVo;
+import com._yzhheng.vo.UmsMemberReceiveAddressDTO;
+import com._yzhheng.vo.WareSkuLockVo;
+import com.alibaba.nacos.common.utils.UuidUtils;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators.UUIDGenerator;
 
 /**
  * REST service for entity "OmsOrder" <br>
  * 
- * This service provides all the necessary operations required by the REST controller <br>
+ * This service provides all the necessary operations required by the REST
+ * controller <br>
  * 
  * @author Telosys
  *
@@ -32,6 +69,30 @@ public class OmsOrderService extends GenericService<OmsOrder, OmsOrderDTO> {
 
 	private final OmsOrderRepository repository; // injected by constructor
 
+	@Autowired
+	MemberFeignService memberFeignService;
+
+	@Autowired
+	CartFeignService cartFeignService;
+
+	@Autowired
+	StringRedisTemplate redisTemplate;
+
+	// @Autowired
+	// SnowFlakeShortUrl snowFlakeShortUrll;
+
+	@Autowired
+	ProductFeignService productFeignService;
+
+	@Autowired
+	WareFeignService wareFeignService;
+
+	@Autowired
+	OmsOrderItemService omsOrderItemService;
+
+	@Autowired
+	RabbitTemplate rabbitTemplate;
+
 	/**
 	 * Constructor (usable for Dependency Injection)
 	 * 
@@ -41,7 +102,7 @@ public class OmsOrderService extends GenericService<OmsOrder, OmsOrderDTO> {
 		super(OmsOrder.class, OmsOrderDTO.class);
 		this.repository = repository;
 	}
-	
+
 	/**
 	 * Returns the entity ID object from the given DTO
 	 *
@@ -66,7 +127,7 @@ public class OmsOrderService extends GenericService<OmsOrder, OmsOrderDTO> {
 	/**
 	 * Finds the entity identified by the given PK
 	 *
-	 * @param id 
+	 * @param id
 	 * @return the entity or null if not found
 	 */
 	public OmsOrderDTO findById(Long id) {
@@ -80,13 +141,13 @@ public class OmsOrderService extends GenericService<OmsOrder, OmsOrderDTO> {
 	 * Saves the given entity with the given PK <br>
 	 * "UPSERT" operation (updated if it exists or created if it does not exist)
 	 *
-	 * @param id 
-	 * @param dto 
+	 * @param id
+	 * @param dto
 	 */
 	public void save(Long id, OmsOrderDTO dto) {
 		Long entityId = id;
 		logger.debug("save({},{})", entityId, dto);
-		// force PK in DTO (just to be sure to conform with the given PK) 
+		// force PK in DTO (just to be sure to conform with the given PK)
 		dto.setId(id);
 		repository.save(dtoToEntity(dto));
 	}
@@ -110,7 +171,7 @@ public class OmsOrderService extends GenericService<OmsOrder, OmsOrderDTO> {
 	/**
 	 * Updates partially the given entity if it exists
 	 *
-	 * @param id 
+	 * @param id
 	 * @param dto
 	 * @return true if updated, false if not found
 	 */
@@ -143,10 +204,17 @@ public class OmsOrderService extends GenericService<OmsOrder, OmsOrderDTO> {
 		return true; // always created
 	}
 
+	public boolean createEntity(OmsOrder dto) {
+		logger.debug("create({})", dto);
+		// auto-generated Primary Key
+		repository.save(dto);
+		return true; // always created
+	}
+
 	/**
 	 * Deletes an entity by its PK
 	 *
-	 * @param id 
+	 * @param id
 	 * @return true if deleted, false if not found
 	 */
 	public boolean deleteById(Long id) {
@@ -160,28 +228,360 @@ public class OmsOrderService extends GenericService<OmsOrder, OmsOrderDTO> {
 		}
 	}
 
+	public OrderConfirmVo confirmOder() {
+		// TODO Auto-generated method stub
+		OrderConfirmVo order = new OrderConfirmVo();
+		List<MemberAddressVo> addresses = memberFeignService
+				.getAddresses(LoginUserInteceptor.threadLocalUser.get().getId())
+				.getBody();
+		order.setAddress(addresses);
+		// TODO: 若使用feign service来 new request 会丢失请求头，也不会经过cart service 的inteceptor
+		List<OrderItemVo> items = cartFeignService
+				.getCurrentUserCartItems(LoginUserInteceptor.threadLocalUser.get().getUsername()).getBody();
+		// System.out.println("LoginUserId: " +
+		// LoginUserInteceptor.threadLocalUserId.get());
+		// System.out.println("Order Testing:" + addresses.get(0));
+		order.setItems(items);
+		Integer integration = LoginUserInteceptor.threadLocalUser.get().getIntegration();
+		order.setIntegration(integration);
+		// System.out.println("Oder To String: " + order.toString());
+		// for (OrderItemVo item : order.getItems()) {
+		// System.out.println("Total Price item: " + item.getTotalPrice());
+		// }
+		String token = UUID.randomUUID().toString().replace("-", "");
+		redisTemplate.opsForValue().set("order:token:" + LoginUserInteceptor.threadLocalUser.get().getId(), token, 30,
+				TimeUnit.MINUTES);
+		order.setOrderToken(token);
+		return order;
+
+	}
+
+	public SubmitOrderResponseVo submitOrder(OrderSubmitVo orderSubmitVo) {
+		// TODO Auto-generated method stub
+		// 1. 验令牌
+		SubmitOrderResponseVo submitOrderResponseVo = new SubmitOrderResponseVo();
+		// Initialize code
+		submitOrderResponseVo.setCode(0);
+		String tokenFromUser = orderSubmitVo.getOrderToken();
+		String tokenFromRedis = redisTemplate.opsForValue()
+				.get("order:token:" + LoginUserInteceptor.threadLocalUser.get().getId());
+		String script = "if redis.call('get', KEYS[1])==ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end";
+		Long execute = redisTemplate.execute(new DefaultRedisScript<Long>(script, Long.class),
+				Arrays.asList("order:token:" + LoginUserInteceptor.threadLocalUser.get().getId().toString()),
+				tokenFromUser);
+		if (execute == 0L) {
+			// 令牌验证失败
+			submitOrderResponseVo.setCode(1);
+			return submitOrderResponseVo;
+		} else {
+			// 令牌验证成功
+			// 2. 创建订单
+			OrderCreateTo order = createOrder(orderSubmitVo);
+			// 3、验证价格
+			BigDecimal payAmount = order.getOrder().getPayAmount();
+			BigDecimal payPrice = orderSubmitVo.getPayPrice();
+			if (Math.abs(payAmount.subtract(payPrice).doubleValue()) < 0.01) {
+				// 金额对比
+				// 4、保存订单
+				saveOrder(order);
+
+				// 5、库存锁定，只要有异常，回滚订单数据
+				// 订单号、所有订单项信息(skuId,skuNum,skuName)
+				WareSkuLockVo lockVo = new WareSkuLockVo();
+				lockVo.setOrderSn(order.getOrder().getOrderSn());
+
+				// 获取出要锁定的商品数据信息
+				List<OrderItemVo> orderItemVos = order.getOrderItems().stream().map((item) -> {
+					OrderItemVo orderItemVo = new OrderItemVo();
+					orderItemVo.setSkuId(item.getSkuId());
+					orderItemVo.setCount(item.getSkuQuantity());
+					orderItemVo.setTitle(item.getSkuName());
+					return orderItemVo;
+				}).collect(Collectors.toList());
+				lockVo.setLocks(orderItemVos);
+
+				// 远程锁库存
+				ResponseEntity<Void> stock = wareFeignService.orderLockStock(lockVo);
+				if (stock.getStatusCode() == HttpStatusCode.valueOf(200)) {
+
+					// 锁成功
+					submitOrderResponseVo.setOrder(order.getOrder());
+					rabbitTemplate.convertAndSend("order-event-exchange", "order.create.order", order.getOrder());
+					return submitOrderResponseVo;
+				} else {
+					// 锁失败
+					submitOrderResponseVo.setCode(3);
+				}
+			} else {
+				submitOrderResponseVo.setCode(2);
+			}
+		}
+		// if (tokenFromUser != null && tokenFromUser.equals(tokenFromRedis)) {
+
+		// } else {
+
+		// }
+		return submitOrderResponseVo;
+	}
+
+	/**
+	 * 创建订单
+	 * 
+	 * @return
+	 */
+	private OrderCreateTo createOrder(OrderSubmitVo orderSubmitVo) {
+		OrderCreateTo createTo = new OrderCreateTo();
+		SnowFlakeShortUrl snowFlakeShortUrl = new SnowFlakeShortUrl(1, 1);
+		// 生成订单号
+		String orderSn = String.valueOf(snowFlakeShortUrl.nextId());
+
+		// 1、构建订单数据
+		OmsOrder orderEntity = builderOrder(orderSubmitVo, orderSn);
+
+		// 2、获取到所有的订单项
+		List<OmsOrderItem> orderItemEntities = builderOrderItems(orderSn);
+
+		// 3、验价(计算价格、积分等信息)
+		computePrice(orderEntity, orderItemEntities);
+
+		createTo.setOrder(orderEntity);
+		createTo.setOrderItems(orderItemEntities);
+
+		return createTo;
+	}
+
+	/**
+	 * 构建订单数据
+	 * 
+	 * @param orderSn 订单号
+	 * @return
+	 */
+	private OmsOrder builderOrder(OrderSubmitVo orderSubmitVo, String orderSn) {
+		// 获取当前用户登录信息
+		// MemberRespVo memberRespVo = LoginUserInterceptor.loginUser.get();
+
+		OmsOrder orderEntity = new OmsOrder();
+		orderEntity.setMemberId(LoginUserInteceptor.threadLocalUser.get().getId());
+		orderEntity.setOrderSn(orderSn);
+		orderEntity.setMemberUsername(LoginUserInteceptor.threadLocalUser.get().getUsername());
+
+		// OrderSubmitVo orderSubmitVo = confirmVoThreadLocal.get();
+
+		// 远程获取收货地址和运费信息
+		// R fareAddressVo = wareFeignService.getFare(orderSubmitVo.getAddrId());
+		// FareVo fareResp = fareAddressVo.getData("data", new TypeReference<FareVo>() {
+		// });
+
+		// 获取到运费信息
+		orderEntity.setFreightAmount(new BigDecimal("5"));
+
+		// 获取到收货地址信息
+		MemberAddressVo address = memberFeignService.findById(orderSubmitVo.getAddrId()).getBody();
+		// 设置收货人信息
+		orderEntity.setReceiverName(address.getName());
+		orderEntity.setReceiverPhone(address.getPhone());
+		orderEntity.setReceiverPostCode(address.getPostCode());
+		orderEntity.setReceiverProvince(address.getProvince());
+		orderEntity.setReceiverCity(address.getCity());
+		orderEntity.setReceiverRegion(address.getRegion());
+		orderEntity.setReceiverDetailAddress(address.getDetailAddress());
+
+		// 设置订单相关的状态信息
+		orderEntity.setStatus(OrderStatusEnum.CREATE_NEW.getCode());
+		orderEntity.setAutoConfirmDay(7);
+		orderEntity.setConfirmStatus(0);
+
+		return orderEntity;
+	}
+
+	/**
+	 * 构建所有订单项数据
+	 * 
+	 * @return
+	 */
+	public List<OmsOrderItem> builderOrderItems(String orderSn) {
+		List<OmsOrderItem> orderItemEntityList = new ArrayList<>();
+
+		// 最后确定每个购物项的价格
+		List<OrderItemVo> currentCartItems = cartFeignService
+				.getCurrentUserCartItems(LoginUserInteceptor.threadLocalUser.get().getUsername()).getBody();
+		if (currentCartItems != null && currentCartItems.size() > 0) {
+			orderItemEntityList = currentCartItems.stream().map((items) -> {
+				// 构建订单项数据
+				OmsOrderItem orderItemEntity = builderOrderItem(items);
+				orderItemEntity.setOrderSn(orderSn);// 设置订单号
+
+				return orderItemEntity;
+			}).collect(Collectors.toList());
+		}
+
+		return orderItemEntityList;
+	}
+
+	/**
+	 * 构建某一个订单项的数据
+	 * 
+	 * @param items
+	 * @return
+	 */
+	private OmsOrderItem builderOrderItem(OrderItemVo items) {
+
+		OmsOrderItem orderItemEntity = new OmsOrderItem();
+
+		// 1、商品的spu信息
+		Long skuId = items.getSkuId();
+		// 获取spu的信息
+		SpuInfoVo spuInfo = productFeignService.getSpuInfoBySkuId(skuId).getBody();
+		// SpuInfoVo spuInfoData = spuInfo.getData("data", new
+		// TypeReference<SpuInfoVo>() {
+		// });
+		orderItemEntity.setSpuId(spuInfo.getId());
+		orderItemEntity.setSpuName(spuInfo.getSpuName());
+		orderItemEntity.setSpuBrand(spuInfo.getBrandName());
+		orderItemEntity.setCategoryId(spuInfo.getCatalogId());
+
+		// 2、商品的sku信息
+		orderItemEntity.setSkuId(skuId);
+		orderItemEntity.setSkuName(items.getTitle());
+		orderItemEntity.setSkuPic(items.getImage());
+		orderItemEntity.setSkuPrice(items.getPrice());
+		orderItemEntity.setSkuQuantity(items.getCount());
+		// 使用StringUtils.collectionToDelimitedString将list集合转换为String
+		String skuAttrValues = StringUtils.collectionToDelimitedString(items.getSkuAttr(), ";");
+		orderItemEntity.setSkuAttrsVals(skuAttrValues);
+
+		// 3、商品的优惠信息
+
+		// 4、商品的积分信息
+		orderItemEntity.setGiftGrowth(items.getPrice().multiply(new BigDecimal(items.getCount())).intValue());
+		orderItemEntity.setGiftIntegration(items.getPrice().multiply(new BigDecimal(items.getCount())).intValue());
+
+		// 5、订单项的价格信息
+		orderItemEntity.setPromotionAmount(BigDecimal.ZERO);
+		orderItemEntity.setCouponAmount(BigDecimal.ZERO);
+		orderItemEntity.setIntegrationAmount(BigDecimal.ZERO);
+
+		// 当前订单项的实际金额.总额 - 各种优惠价格
+		// 原来的价格
+		BigDecimal origin = orderItemEntity.getSkuPrice()
+				.multiply(new BigDecimal(orderItemEntity.getSkuQuantity().toString()));
+		// 原价减去优惠价得到最终的价格
+		BigDecimal subtract = origin.subtract(orderItemEntity.getCouponAmount())
+				.subtract(orderItemEntity.getPromotionAmount())
+				.subtract(orderItemEntity.getIntegrationAmount());
+		orderItemEntity.setRealAmount(subtract);
+
+		return orderItemEntity;
+	}
+
+	/**
+	 * 计算价格的方法
+	 * 
+	 * @param orderEntity
+	 * @param orderItemEntities
+	 */
+	private void computePrice(OmsOrder orderEntity, List<OmsOrderItem> orderItemEntities) {
+		// 总价
+		BigDecimal total = new BigDecimal("0.0");
+		// 优惠价
+		BigDecimal coupon = new BigDecimal("0.0");
+		BigDecimal intergration = new BigDecimal("0.0");
+		BigDecimal promotion = new BigDecimal("0.0");
+
+		// 积分、成长值
+		Integer integrationTotal = 0;
+		Integer growthTotal = 0;
+
+		// 订单总额，叠加每一个订单项的总额信息
+		for (OmsOrderItem orderItem : orderItemEntities) {
+			// 优惠价格信息
+			coupon = coupon.add(orderItem.getCouponAmount());
+			promotion = promotion.add(orderItem.getPromotionAmount());
+			intergration = intergration.add(orderItem.getIntegrationAmount());
+
+			// 总价
+			total = total.add(orderItem.getRealAmount());
+
+			// 积分信息和成长值信息
+			integrationTotal += orderItem.getGiftIntegration();
+			growthTotal += orderItem.getGiftGrowth();
+		}
+
+		// 1、订单价格相关的
+		orderEntity.setTotalAmount(total);
+		// 设置应付总额(总额+运费)
+		orderEntity.setPayAmount(total.add(orderEntity.getFreightAmount()));
+		orderEntity.setCouponAmount(coupon);
+		orderEntity.setPromotionAmount(promotion);
+		orderEntity.setIntegrationAmount(intergration);
+
+		// 设置积分成长值信息
+		orderEntity.setIntegration(integrationTotal);
+		orderEntity.setGrowth(growthTotal);
+
+		// 设置删除状态(0-未删除，1-已删除)
+		orderEntity.setDeleteStatus(0);
+	}
+
+	/**
+	 * 保存订单所有数据
+	 * 
+	 * @param orderCreateTo
+	 */
+	private void saveOrder(OrderCreateTo orderCreateTo) {
+		// 获取订单信息
+		OmsOrder order = orderCreateTo.getOrder();
+		order.setModifyTime(new Date());
+		order.setCreateTime(new Date());
+		// 保存订单
+		this.createEntity(order);
+
+		// 获取订单项信息
+		List<OmsOrderItem> orderItems = orderCreateTo.getOrderItems();
+		// 批量保存订单项数据
+		omsOrderItemService.createAllEntity(orderItems);
+
+	}
+
 	// -----------------------------------------------------------------------------------------
 	// Specific "finders"
 	// -----------------------------------------------------------------------------------------
-/***
-	public List<OmsOrderDTO> findByTitle(String title) {
-		logger.debug("findByTitle({})", title);
-		// List<OmsOrder> list = repository.findByTitle(title);
-		List<OmsOrder> list = repository.findByTitleContaining(title);
-		return entityListToDtoList(list);
+	/***
+	 * public List<OmsOrderDTO> findByTitle(String title) {
+	 * logger.debug("findByTitle({})", title);
+	 * // List<OmsOrder> list = repository.findByTitle(title);
+	 * List<OmsOrder> list = repository.findByTitleContaining(title);
+	 * return entityListToDtoList(list);
+	 * }
+	 * 
+	 * public List<OmsOrderDTO> findByPrice(BigDecimal price) {
+	 * logger.debug("findByPrice({})", price);
+	 * // List<OmsOrder> list = repository.findByTitle(title);
+	 * List<OmsOrder> list = repository.findByPrice(price);
+	 * return entityListToDtoList(list);
+	 * }
+	 * 
+	 * public List<OmsOrderDTO> findByTitleAndPrice(String title, BigDecimal price)
+	 * {
+	 * logger.debug("findByTitleAndPrice({}, {})", title, price);
+	 * List<OmsOrder> list = repository.findByTitleContainingAndPrice(title, price);
+	 * return entityListToDtoList(list);
+	 * }
+	 ***/
+
+	public OmsOrderDTO getOrderStatus(String orderSn) {
+		return entityToDto(repository.getOrderStatus(orderSn));
 	}
 
-	public List<OmsOrderDTO> findByPrice(BigDecimal price) {
-		logger.debug("findByPrice({})", price);
-		// List<OmsOrder> list = repository.findByTitle(title);
-		List<OmsOrder> list = repository.findByPrice(price);
-		return entityListToDtoList(list);
+	public void closeOrder(OmsOrder orderEntity) {
+		// 查询当前这个订单的最新状态
+		OmsOrderDTO order = this.findById(orderEntity.getId());
+		if (order.getStatus() == OrderStatusEnum.CREATE_NEW.getCode()) {
+			order.setStatus(OrderStatusEnum.CANCLED.getCode());
+			this.update(order);
+		}
+		OrderVo vo = new OrderVo();
+		BeanUtils.copyProperties(orderEntity, vo);
+		rabbitTemplate.convertAndSend("order-event-exchange", "order.release.other", vo);
 	}
-
-	public List<OmsOrderDTO> findByTitleAndPrice(String title, BigDecimal price) {
-		logger.debug("findByTitleAndPrice({}, {})", title, price);
-		List<OmsOrder> list = repository.findByTitleContainingAndPrice(title, price);
-		return entityListToDtoList(list);
-	}
-***/
 }

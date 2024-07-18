@@ -8,15 +8,38 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.aspectj.bridge.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com._yzhheng.constant.WareStatusEnum;
 import com._yzhheng.dto.HasStockDto;
+import com._yzhheng.enumFolder.OrderStatusEnum;
+import com._yzhheng.exception.NoStockException;
+import com._yzhheng.feign.OrderFeign;
+import com._yzhheng.persistence.entities.WmsWareOrderTask;
+import com._yzhheng.persistence.entities.WmsWareOrderTaskDetail;
 import com._yzhheng.persistence.entities.WmsWareSku;
 import com._yzhheng.persistence.repositories.WmsWareSkuRepository;
+import com._yzhheng.rest.dto.WmsWareOrderTaskDTO;
+import com._yzhheng.rest.dto.WmsWareOrderTaskDetailDTO;
 import com._yzhheng.rest.dto.WmsWareSkuDTO;
 import com._yzhheng.rest.services.commons.GenericService;
+import com._yzhheng.to.OrderTo;
+import com._yzhheng.to.StockDetailTo;
+import com._yzhheng.to.StockLockedTo;
+import com._yzhheng.vo.OrderItemVo;
+import com._yzhheng.vo.OrderVo;
+import com._yzhheng.vo.SkuWareHasStock;
+import com._yzhheng.vo.WareSkuLockVo;
 
 /**
  * REST service for entity "WmsWareSku" <br>
@@ -27,12 +50,29 @@ import com._yzhheng.rest.services.commons.GenericService;
  * @author Telosys
  *
  */
+
 @Service
 public class WmsWareSkuService extends GenericService<WmsWareSku, WmsWareSkuDTO> {
 
 	private static final Logger logger = LoggerFactory.getLogger(WmsWareSkuService.class);
 
 	private final WmsWareSkuRepository repository; // injected by constructor
+
+	@Autowired
+	WmsWareOrderTaskService wmsWareOrderTaskService;
+
+	@Autowired
+	WmsWareOrderTaskDetailService wmsWareOrderTaskDetailService;
+
+	@Autowired
+	RabbitTemplate rabbitTemplate;
+
+	@Autowired
+	OrderFeign orderFeign;
+
+	public void handleStockLockedRelease(StockLockedTo to, Message message) {
+
+	}
 
 	/**
 	 * Constructor (usable for Dependency Injection)
@@ -172,6 +212,145 @@ public class WmsWareSkuService extends GenericService<WmsWareSku, WmsWareSkuDTO>
 			return dto;
 		}).collect(Collectors.toList());
 		return dtos;
+	}
+
+	@Transactional
+	public Boolean orderLockStock(WareSkuLockVo wareSkuLockVo) {
+		// 保存库存工作单的详情
+		WmsWareOrderTask wareOrderTaskEntity = new WmsWareOrderTask();
+		wareOrderTaskEntity.setOrderSn(wareSkuLockVo.getOrderSn());
+		wmsWareOrderTaskService.createEntity(wareOrderTaskEntity);
+
+		// 按照下单的收获地址，找到一个就近仓库，锁定库存
+		// 1、找到每个商品在哪个仓库都有库存
+		List<OrderItemVo> orderItemVos = wareSkuLockVo.getLocks();
+		List<SkuWareHasStock> collect = orderItemVos.stream().map(item -> {
+			SkuWareHasStock stock = new SkuWareHasStock();
+			Long skuId = item.getSkuId();
+			stock.setSkuId(skuId);
+			stock.setNum(item.getCount());
+			// 查询这个商品在哪里有库存
+			List<Long> wareIds = repository.listWareIdHasSkuStock(skuId);
+			stock.setWareId(wareIds);
+			return stock;
+		}).collect(Collectors.toList());
+
+		// 锁定库存
+		for (SkuWareHasStock hasStock : collect) {
+			Boolean skuStocked = false;
+			Long skuId = hasStock.getSkuId();
+			List<Long> wareIds = hasStock.getWareId();
+			if (wareIds == null || wareIds.size() == 0) {
+				// 没有任何仓库有这个商品的库存
+
+				throw new NoStockException(skuId);
+			}
+			// 减库存
+			for (Long wareId : wareIds) {
+				int count = repository.lockSkuStock(skuId, wareId, hasStock.getNum());
+				if (count == 1) {
+					// 成功
+					skuStocked = true;
+					// 保存库存工作单详情
+					WmsWareOrderTaskDetail wareOrderTaskDetailEntity = new WmsWareOrderTaskDetail();
+					wareOrderTaskDetailEntity.setSkuId(skuId);
+					wareOrderTaskDetailEntity.setSkuNum(hasStock.getNum());
+					wareOrderTaskDetailEntity.setTaskId(wareOrderTaskEntity.getId());
+					wareOrderTaskDetailEntity.setWareId(wareId);
+					wareOrderTaskDetailEntity.setLockStatus(WareStatusEnum.LOCK_WARE.getCode());
+					wmsWareOrderTaskDetailService.create(wareOrderTaskDetailEntity);
+
+					// 将库存锁定成功的消息发给消息队列
+					StockLockedTo stockLockedTo = new StockLockedTo();
+					stockLockedTo.setId(wareOrderTaskEntity.getId());
+					StockDetailTo stockDetailTo = new StockDetailTo();
+					BeanUtils.copyProperties(wareOrderTaskDetailEntity, stockDetailTo);
+					stockLockedTo.setDetail(stockDetailTo);
+					// 告诉MQ库存锁定成功
+					rabbitTemplate.convertAndSend("stock-event-exchange", "stock.locked", stockLockedTo);
+					break;
+				} else {
+					// 失败，当前仓库锁定失败,重试下一个仓库
+				}
+			}
+			if (skuStocked == false) {
+				// 当前商品所有仓库都没锁住
+				throw new NoStockException(skuId);
+			}
+		}
+		// 全部锁定成功
+		return true;
+	}
+
+	/*
+	 * 
+	 */
+	@Transactional
+	public void unlockStock(StockLockedTo stockLockedTo) {
+		StockDetailTo to = stockLockedTo.getDetail();
+		Long detailId = to.getId();
+		/**
+		 * 去库存锁定工作单详情查询数据库关于这个订单的锁定库存信息
+		 * 如果没有这个信息，说明库存锁定失败了，这个商品的库存锁定回滚了，就不需要解锁。
+		 * 如果有这个信息，说明这个商品的库存锁定成功了
+		 */
+		WmsWareOrderTaskDetailDTO dto = wmsWareOrderTaskDetailService.findById(detailId);
+
+		if (dto != null) {
+			Long id = stockLockedTo.getId();
+			WmsWareOrderTaskDTO wareOrderTaskEntity = wmsWareOrderTaskService.findById(id);
+			// 订单号
+			String orderSn = wareOrderTaskEntity.getOrderSn();
+			// 根据订单号查询订单的状态
+			ResponseEntity<OrderVo> order = orderFeign.getOrderStatus(orderSn);
+
+			/**
+			 * 如果查不到订单（订单回滚）或者订单已关闭，就解锁库存
+			 */
+			// Check here
+			if (order.getStatusCode() == HttpStatusCode.valueOf(200)
+					|| order.getStatusCode() == HttpStatusCode.valueOf(404)) {
+				if (order.getBody().getId() == null
+						|| order.getBody().getStatus() == OrderStatusEnum.CANCLED.getCode()) {
+					if (dto.getLockStatus() == WareStatusEnum.LOCK_WARE.getCode()) {
+						// 当前库存工作单详情，状态1已锁定 但是未解锁才可以解锁
+						databaseUnlockStock(to.getSkuId(), to.getWareId(), to.getSkuNum(), detailId);
+					}
+				}
+			} else {
+				// 消息拒绝之后重新放到队列，让别人继续消费解锁 (网络假失败)
+				throw new RuntimeException("远程服务失败");
+			}
+
+		}
+	}
+
+	@Transactional
+	public void unlockStock(OrderVo orderTo) {
+		String orderSn = orderTo.getOrderSn();
+		// 查一下最新库存的状态，防止重复解锁库存
+		WmsWareOrderTask task = wmsWareOrderTaskService.getOrderTaskByOrderSn(orderSn);
+		Long id = task.getId();
+		// 按照工作单找到所有 没有解锁的库存，进行解锁
+		List<WmsWareOrderTaskDetail> entities = wmsWareOrderTaskDetailService.getAllLockedDetail(id,
+				WareStatusEnum.LOCK_WARE.getCode());
+
+		// Long skuId, Long wareId, Integer num, Long taskDetailId
+		for (WmsWareOrderTaskDetail entity : entities) {
+			databaseUnlockStock(entity.getSkuId(), entity.getWareId(), entity.getSkuNum(), entity.getId());
+		}
+	}
+
+	@Transactional
+	private void databaseUnlockStock(Long skuId, Long wareId, Integer skuNum, Long detailId) {
+		repository.databaseUnlockStock(skuId, wareId, skuNum);
+
+		// 更新工作单的状态
+		WmsWareOrderTaskDetailDTO taskDetailEntity = new WmsWareOrderTaskDetailDTO();
+		taskDetailEntity.setId(detailId);
+		taskDetailEntity.setLockStatus(WareStatusEnum.UNLOCK_WARE.getCode());// 变为已解锁
+		Boolean updateStatus = wmsWareOrderTaskDetailService.partialUpdate(detailId, taskDetailEntity);
+		System.out.println("updateStatus=" + updateStatus.booleanValue());
 	}
 
 	// -----------------------------------------------------------------------------------------

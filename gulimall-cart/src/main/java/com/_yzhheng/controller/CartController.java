@@ -1,11 +1,14 @@
 package com._yzhheng.controller;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com._yzhheng.inteceptor.CartInteceptor;
 import com._yzhheng.service.CartService;
@@ -15,6 +18,7 @@ import com._yzhheng.vo.UserInfoTo;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -88,4 +92,9 @@ public class CartController {
         return "redirect:http://cart.gulimall.com:8600/cart.html";
     }
 
+    @GetMapping("/getCurrentUserCartItems/{username}")
+    // TODO: @ResponseBody
+    public ResponseEntity<List<CartItem>> getCurrentUserCartItems(@PathVariable String username) {
+        return ResponseEntity.ok(cartService.getCurrentUserCartItems(username));
+    }
 }

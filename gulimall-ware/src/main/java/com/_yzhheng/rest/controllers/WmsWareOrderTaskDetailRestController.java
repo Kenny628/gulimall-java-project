@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com._yzhheng.persistence.entities.WmsWareOrderTaskDetail;
 import com._yzhheng.rest.dto.WmsWareOrderTaskDetailDTO;
 import com._yzhheng.rest.services.WmsWareOrderTaskDetailService;
 
@@ -29,9 +30,9 @@ import com._yzhheng.rest.services.WmsWareOrderTaskDetailService;
 public class WmsWareOrderTaskDetailRestController {
 
 	private static final Logger logger = LoggerFactory.getLogger(WmsWareOrderTaskDetailRestController.class);
-	
-	private WmsWareOrderTaskDetailService service ; // injected
-	
+
+	private WmsWareOrderTaskDetailService service; // injected
+
 	/**
 	 * Constructor (usable for Dependency Injection)
 	 *
@@ -41,7 +42,7 @@ public class WmsWareOrderTaskDetailRestController {
 		super();
 		this.service = service;
 	}
-    
+
 	/**
 	 * Get ALL
 	 *
@@ -49,43 +50,40 @@ public class WmsWareOrderTaskDetailRestController {
 	 */
 	@GetMapping("")
 	protected ResponseEntity<List<WmsWareOrderTaskDetailDTO>> findAll() {
-    	logger.debug("REST : GET - findAll");
-    	List<WmsWareOrderTaskDetailDTO> list = service.findAll();
-    	return ResponseEntity.ok(list); // always 200
-    }
-    
-    /**
-     * Get ONE identified by the given PK
+		logger.debug("REST : GET - findAll");
+		List<WmsWareOrderTaskDetailDTO> list = service.findAll();
+		return ResponseEntity.ok(list); // always 200
+	}
+
+	/**
+	 * Get ONE identified by the given PK
 	 *
 	 * @param id
-     * @return 200 or 404 
-     */
-    @GetMapping("/{id}")
-    protected ResponseEntity<WmsWareOrderTaskDetailDTO> findById(@PathVariable Long id) {
-    	logger.debug("REST : GET - findById");
-    	WmsWareOrderTaskDetailDTO wmsWareOrderTaskDetailDTO = service.findById(id);
-		if ( wmsWareOrderTaskDetailDTO != null ) {
+	 * @return 200 or 404
+	 */
+	@GetMapping("/{id}")
+	protected ResponseEntity<WmsWareOrderTaskDetailDTO> findById(@PathVariable Long id) {
+		logger.debug("REST : GET - findById");
+		WmsWareOrderTaskDetailDTO wmsWareOrderTaskDetailDTO = service.findById(id);
+		if (wmsWareOrderTaskDetailDTO != null) {
 			return ResponseEntity.ok(wmsWareOrderTaskDetailDTO); // 200 OK, found
-		}
-		else {
+		} else {
 			return ResponseEntity.notFound().build(); // 404 Not found
-		}		
-    }
+		}
+	}
 
-    
 	/**
- 	 * Create if doesn't exist 
+	 * Create if doesn't exist
 	 *
 	 * @param wmsWareOrderTaskDetailDTO
 	 * @return 201 created or 409 conflict
 	 */
 	@PostMapping("")
-	protected ResponseEntity<Void> create(@RequestBody WmsWareOrderTaskDetailDTO wmsWareOrderTaskDetailDTO) {
-    	logger.debug("REST : POST - create");
-		if ( service.create(wmsWareOrderTaskDetailDTO) ) {
+	protected ResponseEntity<Void> create(@RequestBody WmsWareOrderTaskDetail wmsWareOrderTaskDetailDTO) {
+		logger.debug("REST : POST - create");
+		if (service.create(wmsWareOrderTaskDetailDTO)) {
 			return ResponseEntity.status(HttpStatus.CREATED).build(); // 201 created
-		}
-		else {
+		} else {
 			return ResponseEntity.status(HttpStatus.CONFLICT).build(); // 409 Conflict
 		}
 	}
@@ -98,60 +96,59 @@ public class WmsWareOrderTaskDetailRestController {
 	 * @return 200 updated or created
 	 */
 	@PutMapping("/{id}")
-	protected ResponseEntity<Void> save(@PathVariable Long id, @RequestBody WmsWareOrderTaskDetailDTO wmsWareOrderTaskDetailDTO) {
-    	logger.debug("REST : PUT - save");
+	protected ResponseEntity<Void> save(@PathVariable Long id,
+			@RequestBody WmsWareOrderTaskDetailDTO wmsWareOrderTaskDetailDTO) {
+		logger.debug("REST : PUT - save");
 		service.save(id, wmsWareOrderTaskDetailDTO);
 		return ResponseEntity.ok().build(); // OK, updated or created
 	}
 
 	/**
- 	 * Update if exists 
+	 * Update if exists
 	 *
 	 * @param wmsWareOrderTaskDetailDTO
 	 * @return 200 updated or 404 not found
 	 */
 	@PutMapping("")
 	protected ResponseEntity<Void> update(@RequestBody WmsWareOrderTaskDetailDTO wmsWareOrderTaskDetailDTO) {
-    	logger.debug("REST : PUT - update");
-		if ( service.update(wmsWareOrderTaskDetailDTO) ) {
+		logger.debug("REST : PUT - update");
+		if (service.update(wmsWareOrderTaskDetailDTO)) {
 			return ResponseEntity.ok().build(); // 200 OK, found and updated
-		}
-		else {
+		} else {
 			return ResponseEntity.notFound().build(); // 404 Not found = "not updated"
 		}
 	}
 
 	/**
- 	 * Partial update for the given PK (if it exists )
+	 * Partial update for the given PK (if it exists )
 	 *
 	 * @param id
 	 * @param wmsWareOrderTaskDetailDTO
 	 * @return 200 updated or 404 not found
 	 */
 	@PatchMapping("/{id}")
-	protected ResponseEntity<Void> partialUpdate(@PathVariable Long id, @RequestBody WmsWareOrderTaskDetailDTO wmsWareOrderTaskDetailDTO) {
-    	logger.debug("REST : PATCH - partialUpdate");
-    	if ( service.partialUpdate(id, wmsWareOrderTaskDetailDTO) ) {
-    		return ResponseEntity.ok().build(); // OK, found and updated
-    	}
-    	else {
+	protected ResponseEntity<Void> partialUpdate(@PathVariable Long id,
+			@RequestBody WmsWareOrderTaskDetailDTO wmsWareOrderTaskDetailDTO) {
+		logger.debug("REST : PATCH - partialUpdate");
+		if (service.partialUpdate(id, wmsWareOrderTaskDetailDTO)) {
+			return ResponseEntity.ok().build(); // OK, found and updated
+		} else {
 			return ResponseEntity.notFound().build(); // 404 Not found = "not updated"
-    	}
+		}
 	}
 
 	/**
-	 * Delete by PK 
+	 * Delete by PK
 	 *
 	 * @param id
 	 * @return 204 deleted or 404 not found
 	 */
 	@DeleteMapping("/{id}")
 	protected ResponseEntity<Void> deleteById(@PathVariable Long id) {
-    	logger.debug("REST : DELETE - deleteById");
-		if ( service.deleteById(id) ) {
+		logger.debug("REST : DELETE - deleteById");
+		if (service.deleteById(id)) {
 			return ResponseEntity.noContent().build(); // 204 No content = "deleted"
-		}
-		else {
+		} else {
 			return ResponseEntity.notFound().build(); // 404 Not found = "not deleted"
 		}
 	}

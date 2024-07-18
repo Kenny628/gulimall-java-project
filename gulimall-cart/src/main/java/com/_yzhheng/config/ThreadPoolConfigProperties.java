@@ -6,9 +6,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * 在配置文件中动态绑定线程池中参数
- * 
- * @author starsea
- * @date 2022-04-28
  */
 @ConfigurationProperties(prefix = "gulimall.thread")
 @Component

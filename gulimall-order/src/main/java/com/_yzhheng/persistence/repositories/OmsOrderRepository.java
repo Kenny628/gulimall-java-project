@@ -5,35 +5,41 @@
 package com._yzhheng.persistence.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import com._yzhheng.persistence.entities.OmsOrder;
+import com._yzhheng.rest.dto.OmsOrderDTO;
 
 /**
- * Spring Data JPA repository for entity "OmsOrder" <br> 
+ * Spring Data JPA repository for entity "OmsOrder" <br>
  * 
  * This repository extends PagingAndSortingRepository interface <br>
  * so it provides by default all the basic CRUD operations : <br>
- *   findById, findAll, save, delete, etc <br> 
+ * findById, findAll, save, delete, etc <br>
  * with pagination and sorting : <br>
- *   findAll(Pageable), findAll(Sort)<br>
+ * findAll(Pageable), findAll(Sort)<br>
  * 
  * This repository can be extended by adding specific "finders" methods<br>
- * To do so, see the "predicates conventions" for "derived query methods" in Spring Data documentation
+ * To do so, see the "predicates conventions" for "derived query methods" in
+ * Spring Data documentation
  * 
  * @author Telosys
  *
  */
 public interface OmsOrderRepository extends JpaRepository<OmsOrder, Long> {
 
-	// Insert specific finders here 
+	@Query(value = "Select * from oms_order where order_sn=:orderSn", nativeQuery = true)
+	OmsOrder getOrderStatus(String orderSn);
 
-	//List<OmsOrder> findByXxx(String xxx);
+	// Insert specific finders here
 
-	//List<OmsOrder> findByXxxStartingWith(String xxx);
+	// List<OmsOrder> findByXxx(String xxx);
 
-	//List<OmsOrder> findByXxxContaining(String xxx);
+	// List<OmsOrder> findByXxxStartingWith(String xxx);
 
-	//List<OmsOrder> findByYyy(BigDecimal yyy);
+	// List<OmsOrder> findByXxxContaining(String xxx);
 
-	//List<OmsOrder> findByXxxContainingAndYyy(String xxx, BigDecimal yyy);
+	// List<OmsOrder> findByYyy(BigDecimal yyy);
+
+	// List<OmsOrder> findByXxxContainingAndYyy(String xxx, BigDecimal yyy);
 }

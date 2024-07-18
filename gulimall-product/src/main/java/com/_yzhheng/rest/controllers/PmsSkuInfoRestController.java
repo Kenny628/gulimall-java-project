@@ -4,7 +4,10 @@
  */
 package com._yzhheng.rest.controllers;
 
+import java.math.BigDecimal;
 import java.util.List;
+
+import javax.print.DocFlavor.READER;
 
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -174,4 +177,9 @@ public class PmsSkuInfoRestController {
 	// return modelMapper.map(user, PmsSkuInfoDTO.class);
 	// }
 
+	@GetMapping("/price/{skuId}")
+	public ResponseEntity<BigDecimal> getPrice(@PathVariable Long skuId) {
+		PmsSkuInfoDTO info = service.findById(skuId);
+		return ResponseEntity.ok(info.getPrice());
+	}
 }

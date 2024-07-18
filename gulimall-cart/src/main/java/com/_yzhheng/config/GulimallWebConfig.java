@@ -12,7 +12,8 @@ public class GulimallWebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         // TODO Auto-generated method stub
-        registry.addInterceptor(new CartInteceptor()).addPathPatterns("/**");
+        registry.addInterceptor(new CartInteceptor()).addPathPatterns("/**")
+                .excludePathPatterns("/getCurrentUserCartItems/*");
         // WebMvcConfigurer.super.addInterceptors(registry);
     }
 }

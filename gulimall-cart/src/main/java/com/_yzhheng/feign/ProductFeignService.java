@@ -1,5 +1,6 @@
 package com._yzhheng.feign;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.cloud.openfeign.FeignClient;
@@ -16,6 +17,9 @@ public interface ProductFeignService {
 
     @GetMapping("/api/v1/PmsSkuSaleAttrValue/getSkuAttrCombo/{skuid}")
     public ResponseEntity<List<String>> getSkuSaleAttrValues(@PathVariable Long skuid);
+
+    @GetMapping("/api/v1/PmsSkuInfo/price/{skuId}")
+    public ResponseEntity<BigDecimal> getPrice(@PathVariable Long skuId);
     // public ResponseEntity<PmsSkuInfoDTO> findById(@PathVariable Long skuId);
     // public ResponseEntity<PmsSkuInfoDTO> getSkuInfo(@PathVariable Long skuId);
 

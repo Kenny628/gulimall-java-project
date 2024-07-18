@@ -5,10 +5,6 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.util.List;
 
-/**
- * @author starsea
- * @date 2022-01-03 19:03
- */
 @Data
 public class SkuEsModel {
     private Long skuId;

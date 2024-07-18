@@ -7,11 +7,12 @@ package com._yzhheng.rest.services;
 import java.util.List;
 import java.util.Optional;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com._yzhheng.constant.WareStatusEnum;
+import com._yzhheng.persistence.entities.WmsWareOrderTask;
 import com._yzhheng.persistence.entities.WmsWareOrderTaskDetail;
 import com._yzhheng.persistence.repositories.WmsWareOrderTaskDetailRepository;
 import com._yzhheng.rest.dto.WmsWareOrderTaskDetailDTO;
@@ -20,7 +21,8 @@ import com._yzhheng.rest.services.commons.GenericService;
 /**
  * REST service for entity "WmsWareOrderTaskDetail" <br>
  * 
- * This service provides all the necessary operations required by the REST controller <br>
+ * This service provides all the necessary operations required by the REST
+ * controller <br>
  * 
  * @author Telosys
  *
@@ -41,7 +43,7 @@ public class WmsWareOrderTaskDetailService extends GenericService<WmsWareOrderTa
 		super(WmsWareOrderTaskDetail.class, WmsWareOrderTaskDetailDTO.class);
 		this.repository = repository;
 	}
-	
+
 	/**
 	 * Returns the entity ID object from the given DTO
 	 *
@@ -66,7 +68,7 @@ public class WmsWareOrderTaskDetailService extends GenericService<WmsWareOrderTa
 	/**
 	 * Finds the entity identified by the given PK
 	 *
-	 * @param id 
+	 * @param id
 	 * @return the entity or null if not found
 	 */
 	public WmsWareOrderTaskDetailDTO findById(Long id) {
@@ -80,13 +82,13 @@ public class WmsWareOrderTaskDetailService extends GenericService<WmsWareOrderTa
 	 * Saves the given entity with the given PK <br>
 	 * "UPSERT" operation (updated if it exists or created if it does not exist)
 	 *
-	 * @param id 
-	 * @param dto 
+	 * @param id
+	 * @param dto
 	 */
 	public void save(Long id, WmsWareOrderTaskDetailDTO dto) {
 		Long entityId = id;
 		logger.debug("save({},{})", entityId, dto);
-		// force PK in DTO (just to be sure to conform with the given PK) 
+		// force PK in DTO (just to be sure to conform with the given PK)
 		dto.setId(id);
 		repository.save(dtoToEntity(dto));
 	}
@@ -110,7 +112,7 @@ public class WmsWareOrderTaskDetailService extends GenericService<WmsWareOrderTa
 	/**
 	 * Updates partially the given entity if it exists
 	 *
-	 * @param id 
+	 * @param id
 	 * @param dto
 	 * @return true if updated, false if not found
 	 */
@@ -121,7 +123,7 @@ public class WmsWareOrderTaskDetailService extends GenericService<WmsWareOrderTa
 		if (optionalEntity.isPresent()) {
 			WmsWareOrderTaskDetail entity = optionalEntity.get();
 			// implement here the partial update
-			// entity.setXxx(dto.getXxx());
+			entity.setLockStatus(dto.getLockStatus());
 			// etc ...
 			repository.save(entity);
 			return true; // find and updated
@@ -136,17 +138,17 @@ public class WmsWareOrderTaskDetailService extends GenericService<WmsWareOrderTa
 	 * @param dto
 	 * @return true if created, false if already exists
 	 */
-	public boolean create(WmsWareOrderTaskDetailDTO dto) {
+	public boolean create(WmsWareOrderTaskDetail dto) {
 		logger.debug("create({})", dto);
 		// auto-generated Primary Key
-		repository.save(dtoToEntity(dto));
+		repository.save(dto);
 		return true; // always created
 	}
 
 	/**
 	 * Deletes an entity by its PK
 	 *
-	 * @param id 
+	 * @param id
 	 * @return true if deleted, false if not found
 	 */
 	public boolean deleteById(Long id) {
@@ -160,28 +162,34 @@ public class WmsWareOrderTaskDetailService extends GenericService<WmsWareOrderTa
 		}
 	}
 
+	public List<WmsWareOrderTaskDetail> getAllLockedDetail(Long id, Integer lockWare) {
+		return repository.getAllLockedDetail(id, lockWare);
+	}
+
 	// -----------------------------------------------------------------------------------------
 	// Specific "finders"
 	// -----------------------------------------------------------------------------------------
-/***
-	public List<WmsWareOrderTaskDetailDTO> findByTitle(String title) {
-		logger.debug("findByTitle({})", title);
-		// List<WmsWareOrderTaskDetail> list = repository.findByTitle(title);
-		List<WmsWareOrderTaskDetail> list = repository.findByTitleContaining(title);
-		return entityListToDtoList(list);
-	}
-
-	public List<WmsWareOrderTaskDetailDTO> findByPrice(BigDecimal price) {
-		logger.debug("findByPrice({})", price);
-		// List<WmsWareOrderTaskDetail> list = repository.findByTitle(title);
-		List<WmsWareOrderTaskDetail> list = repository.findByPrice(price);
-		return entityListToDtoList(list);
-	}
-
-	public List<WmsWareOrderTaskDetailDTO> findByTitleAndPrice(String title, BigDecimal price) {
-		logger.debug("findByTitleAndPrice({}, {})", title, price);
-		List<WmsWareOrderTaskDetail> list = repository.findByTitleContainingAndPrice(title, price);
-		return entityListToDtoList(list);
-	}
-***/
+	/***
+	 * public List<WmsWareOrderTaskDetailDTO> findByTitle(String title) {
+	 * logger.debug("findByTitle({})", title);
+	 * // List<WmsWareOrderTaskDetail> list = repository.findByTitle(title);
+	 * List<WmsWareOrderTaskDetail> list = repository.findByTitleContaining(title);
+	 * return entityListToDtoList(list);
+	 * }
+	 * 
+	 * public List<WmsWareOrderTaskDetailDTO> findByPrice(BigDecimal price) {
+	 * logger.debug("findByPrice({})", price);
+	 * // List<WmsWareOrderTaskDetail> list = repository.findByTitle(title);
+	 * List<WmsWareOrderTaskDetail> list = repository.findByPrice(price);
+	 * return entityListToDtoList(list);
+	 * }
+	 * 
+	 * public List<WmsWareOrderTaskDetailDTO> findByTitleAndPrice(String title,
+	 * BigDecimal price) {
+	 * logger.debug("findByTitleAndPrice({}, {})", title, price);
+	 * List<WmsWareOrderTaskDetail> list =
+	 * repository.findByTitleContainingAndPrice(title, price);
+	 * return entityListToDtoList(list);
+	 * }
+	 ***/
 }

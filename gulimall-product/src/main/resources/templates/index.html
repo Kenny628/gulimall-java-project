@@ -95,10 +95,10 @@
   					</b>
         <ul>
           <li>
-            <a href="http://auth.gulimall.com/login.html">你好，[[${session.loginUser==null?"请登录":session.loginUser}]]</a>
+            <a href="http://auth.gulimall.com:8600/login.html">你好，[[${session.loginUser.username==null?"请登录":session.loginUser.username}]]</a>
           </li>
           <li>
-            <a href="http://auth.gulimall.com/reg.html" class="li_2">免费注册</a>
+            <a href="http://auth.gulimall.com:8600/reg.html" class="li_2">免费注册</a>
           </li>
           <span>|</span>
           <li>

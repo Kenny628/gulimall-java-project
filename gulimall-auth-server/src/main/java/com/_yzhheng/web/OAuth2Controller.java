@@ -71,11 +71,10 @@ public class OAuth2Controller {
             socialuser.setRetrievedUsername(retrievedUsername);
             socialuser.setRetrievedUserId(retrievedUserId);
             // https://api.github.com/user
-            String temp = memberFeign.loginUser(socialuser).getBody().toString();
-            JSONObject jj = JSON.parseObject(temp);
-            // System.out.println(jj.getString("username"));
-            session.setAttribute("loginUser", jj.getString("username").toString());
-            System.out.println(session.getAttribute("loginUser"));
+            Object temp = memberFeign.loginUser(socialuser).getBody();
+            UmsMemberDTO jj = JSON.parseObject(temp.toString(), UmsMemberDTO.class);
+            session.setAttribute("loginUser", jj);
+            System.out.println("Objectttttt: " + temp.toString());
         } else {
             return "redirect:http://auth.gulimalll.com/login.html";
         }

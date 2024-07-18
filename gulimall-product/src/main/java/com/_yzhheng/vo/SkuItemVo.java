@@ -14,10 +14,6 @@ import com._yzhheng.rest.databaseDto.SpuItemAttrGroupDto;
 
 import jakarta.annotation.sql.DataSourceDefinition;
 
-/**
- * @author Starsea
- * @date 2022-04-24 22:06
- */
 @ToString
 @Data
 public class SkuItemVo {

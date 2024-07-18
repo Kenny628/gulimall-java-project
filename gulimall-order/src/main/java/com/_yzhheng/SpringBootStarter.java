@@ -4,6 +4,7 @@
  */
 package com._yzhheng;
 
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -26,6 +27,7 @@ import com._yzhheng.application.Application;
 @EnableDiscoveryClient
 @EnableFeignClients
 @SpringBootApplication
+@EnableRabbit
 // If this class is not at the top level of the packages hierarchy use
 // @ComponentScan
 // for example : @ComponentScan(basePackages = "org.demo")

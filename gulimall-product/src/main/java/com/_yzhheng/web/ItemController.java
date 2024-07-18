@@ -13,9 +13,6 @@ import java.util.concurrent.ExecutionException;
 
 /**
  * 前端详情页Controller
- * 
- * @author Starsea
- * @date 2022-04-24 21:56
  */
 @Controller
 public class ItemController {

@@ -5,35 +5,40 @@
 package com._yzhheng.persistence.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import com._yzhheng.persistence.entities.WmsWareOrderTask;
 
 /**
- * Spring Data JPA repository for entity "WmsWareOrderTask" <br> 
+ * Spring Data JPA repository for entity "WmsWareOrderTask" <br>
  * 
  * This repository extends PagingAndSortingRepository interface <br>
  * so it provides by default all the basic CRUD operations : <br>
- *   findById, findAll, save, delete, etc <br> 
+ * findById, findAll, save, delete, etc <br>
  * with pagination and sorting : <br>
- *   findAll(Pageable), findAll(Sort)<br>
+ * findAll(Pageable), findAll(Sort)<br>
  * 
  * This repository can be extended by adding specific "finders" methods<br>
- * To do so, see the "predicates conventions" for "derived query methods" in Spring Data documentation
+ * To do so, see the "predicates conventions" for "derived query methods" in
+ * Spring Data documentation
  * 
  * @author Telosys
  *
  */
 public interface WmsWareOrderTaskRepository extends JpaRepository<WmsWareOrderTask, Long> {
 
-	// Insert specific finders here 
+	@Query(value = "Select * from wms_ware_order_task where order_sn = :orderSn", nativeQuery = true)
+	WmsWareOrderTask getOrderTaskByOrderSn(String orderSn);
 
-	//List<WmsWareOrderTask> findByXxx(String xxx);
+	// Insert specific finders here
 
-	//List<WmsWareOrderTask> findByXxxStartingWith(String xxx);
+	// List<WmsWareOrderTask> findByXxx(String xxx);
 
-	//List<WmsWareOrderTask> findByXxxContaining(String xxx);
+	// List<WmsWareOrderTask> findByXxxStartingWith(String xxx);
 
-	//List<WmsWareOrderTask> findByYyy(BigDecimal yyy);
+	// List<WmsWareOrderTask> findByXxxContaining(String xxx);
 
-	//List<WmsWareOrderTask> findByXxxContainingAndYyy(String xxx, BigDecimal yyy);
+	// List<WmsWareOrderTask> findByYyy(BigDecimal yyy);
+
+	// List<WmsWareOrderTask> findByXxxContainingAndYyy(String xxx, BigDecimal yyy);
 }

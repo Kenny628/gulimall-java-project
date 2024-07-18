@@ -33,6 +33,7 @@ import com._yzhheng.rest.Feign.SearchFeign;
 import com._yzhheng.rest.Feign.WareFeign;
 import com._yzhheng.rest.dto.PmsBrandDTO;
 import com._yzhheng.rest.dto.PmsCategoryDTO;
+import com._yzhheng.rest.dto.PmsSkuInfoDTO;
 import com._yzhheng.rest.dto.PmsSpuInfoDTO;
 import com._yzhheng.rest.services.commons.GenericService;
 
@@ -276,6 +277,20 @@ public class PmsSpuInfoService extends GenericService<PmsSpuInfo, PmsSpuInfoDTO>
 		}
 	}
 
+	public PmsSpuInfoDTO getSpuInfoBySkuId(Long skuId) {
+		// 先查询sku表里的数据
+		PmsSkuInfo byId = skuRepository.findById(skuId).get();
+		// 获得spuId
+		Long spuId = byId.getSpuId();
+		// 再通过spuId查询spuInfo信息表里的数据
+		PmsSpuInfoDTO spuInfoEntity = this.findById(spuId);
+
+		// // 查询品牌表的数据获取品牌名
+		// BrandEntity brandEntity = brandService.getById(spuInfoEntity.getBrandId());
+		// spuInfoEntity.setBrandName(brandEntity.getName());
+
+		return spuInfoEntity;
+	}
 	// -----------------------------------------------------------------------------------------
 	// Specific "finders"
 	// -----------------------------------------------------------------------------------------

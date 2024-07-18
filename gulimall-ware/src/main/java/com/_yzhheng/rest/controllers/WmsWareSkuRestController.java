@@ -22,8 +22,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com._yzhheng.dto.HasStockDto;
+import com._yzhheng.exception.NoStockException;
 import com._yzhheng.rest.dto.WmsWareSkuDTO;
 import com._yzhheng.rest.services.WmsWareSkuService;
+import com._yzhheng.vo.WareSkuLockVo;
 
 @RestController
 @RequestMapping(value = "api/v1/WmsWareSku", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -155,6 +157,16 @@ public class WmsWareSkuRestController {
 	public ResponseEntity<List<HasStockDto>> getSkuHasStock(@RequestBody List<Long> skuIds) {
 		List<HasStockDto> dtos = service.getSkuHasStock(skuIds);
 		return ResponseEntity.ok(dtos);
+	}
+
+	@PostMapping("/lock/order")
+	public ResponseEntity<Void> orderLockStock(@RequestBody WareSkuLockVo wareSkuLockVo) {
+		try {
+			Boolean stock = service.orderLockStock(wareSkuLockVo);
+			return ResponseEntity.ok().build();
+		} catch (NoStockException e) {
+			return ResponseEntity.notFound().build();
+		}
 	}
 
 }

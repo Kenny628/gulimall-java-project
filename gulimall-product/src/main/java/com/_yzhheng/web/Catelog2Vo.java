@@ -8,9 +8,6 @@ import java.util.List;
 
 /**
  * 二级分类vo
- * 
- * @author Starsea
- * @date 2022-03-30 21:50
  */
 @NoArgsConstructor
 @AllArgsConstructor

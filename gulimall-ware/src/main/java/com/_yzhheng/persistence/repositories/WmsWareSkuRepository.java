@@ -4,7 +4,10 @@
  */
 package com._yzhheng.persistence.repositories;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com._yzhheng.persistence.entities.WmsWareSku;
@@ -29,6 +32,17 @@ public interface WmsWareSkuRepository extends JpaRepository<WmsWareSku, Long> {
 
 	@Query(value = "SELECT SUM(stock-stock_locked) FROM wms_ware_sku where sku_id = :skuId group by sku_id", nativeQuery = true)
 	Long checkStock(long skuId);
+
+	@Query(value = "SELECT ware_id FROM wms_ware_sku WHERE sku_id = :skuId AND stock-stock_locked>0", nativeQuery = true)
+	List<Long> listWareIdHasSkuStock(Long skuId);
+
+	@Modifying
+	@Query(value = "UPDATE wms_ware_sku SET stock_locked=stock_locked + :num WHERE sku_id=:skuId AND ware_id=:wareId AND stock-stock_locked>=:num limit 9999999999", nativeQuery = true)
+	int lockSkuStock(Long skuId, Long wareId, Integer num);
+
+	@Modifying
+	@Query(value = "UPDATE wms_ware_sku SET stock_locked=stock_locked - :skuNum WHERE sku_id = :skuId AND ware_id = :wareId limit 9999999999", nativeQuery = true)
+	void databaseUnlockStock(Long skuId, Long wareId, Integer skuNum);
 
 	// Insert specific finders here
 

@@ -115,8 +115,8 @@ public class LoginController {
             // UmsMemberDTO loginMember = JSON.parseObject(response.toString(),
             // UmsMemberDTO.class);
             // session.setAttribute("loginUser", loginMember);
-            JSONObject jj = JSON.parseObject(response.toString());
-            session.setAttribute("loginUser", jj.getString("username").toString());
+            UmsMemberDTO jj = JSON.parseObject(response.toString(), UmsMemberDTO.class);
+            session.setAttribute("loginUser", jj);
             return "redirect:http://gulimall.com:8600";
         }
     }

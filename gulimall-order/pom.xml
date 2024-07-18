@@ -25,12 +25,47 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+			    <exclusions>
+        <exclusion>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-json</artifactId>
+        </exclusion>
+    </exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-openfeign</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-loadbalancer</artifactId>
+		</dependency>
+        <!--整合RabbitMq消息队列-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+<dependency>
+    <groupId>com.stripe</groupId>
+    <artifactId>stripe-java</artifactId>
+    <version>23.2.0</version>
+</dependency>
+<dependency>
+    <groupId>com.google.code.gson</groupId>
+    <artifactId>gson</artifactId>
+</dependency>
+				<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+				<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+	<dependency>
+		<groupId>org.springframework.session</groupId>
+		<artifactId>spring-session-data-redis</artifactId>
+	</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
@@ -62,6 +97,12 @@
 	<artifactId>gulimall-common</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 			</dependency>
+			<!--Tencent snowfalke-->
+<!-- <dependency>
+   <groupId>com.tencent.devops.leaf</groupId>
+   <artifactId>leaf-core</artifactId>
+   <version>1.0.2-RELEASE</version>
+</dependency> -->
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>

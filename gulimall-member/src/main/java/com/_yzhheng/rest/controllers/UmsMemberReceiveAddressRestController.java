@@ -29,9 +29,9 @@ import com._yzhheng.rest.services.UmsMemberReceiveAddressService;
 public class UmsMemberReceiveAddressRestController {
 
 	private static final Logger logger = LoggerFactory.getLogger(UmsMemberReceiveAddressRestController.class);
-	
-	private UmsMemberReceiveAddressService service ; // injected
-	
+
+	private UmsMemberReceiveAddressService service; // injected
+
 	/**
 	 * Constructor (usable for Dependency Injection)
 	 *
@@ -41,7 +41,7 @@ public class UmsMemberReceiveAddressRestController {
 		super();
 		this.service = service;
 	}
-    
+
 	/**
 	 * Get ALL
 	 *
@@ -49,43 +49,40 @@ public class UmsMemberReceiveAddressRestController {
 	 */
 	@GetMapping("")
 	protected ResponseEntity<List<UmsMemberReceiveAddressDTO>> findAll() {
-    	logger.debug("REST : GET - findAll");
-    	List<UmsMemberReceiveAddressDTO> list = service.findAll();
-    	return ResponseEntity.ok(list); // always 200
-    }
-    
-    /**
-     * Get ONE identified by the given PK
+		logger.debug("REST : GET - findAll");
+		List<UmsMemberReceiveAddressDTO> list = service.findAll();
+		return ResponseEntity.ok(list); // always 200
+	}
+
+	/**
+	 * Get ONE identified by the given PK
 	 *
 	 * @param id
-     * @return 200 or 404 
-     */
-    @GetMapping("/{id}")
-    protected ResponseEntity<UmsMemberReceiveAddressDTO> findById(@PathVariable Long id) {
-    	logger.debug("REST : GET - findById");
-    	UmsMemberReceiveAddressDTO umsMemberReceiveAddressDTO = service.findById(id);
-		if ( umsMemberReceiveAddressDTO != null ) {
+	 * @return 200 or 404
+	 */
+	@GetMapping("/{id}")
+	public ResponseEntity<UmsMemberReceiveAddressDTO> findById(@PathVariable Long id) {
+		logger.debug("REST : GET - findById");
+		UmsMemberReceiveAddressDTO umsMemberReceiveAddressDTO = service.findById(id);
+		if (umsMemberReceiveAddressDTO != null) {
 			return ResponseEntity.ok(umsMemberReceiveAddressDTO); // 200 OK, found
-		}
-		else {
+		} else {
 			return ResponseEntity.notFound().build(); // 404 Not found
-		}		
-    }
+		}
+	}
 
-    
 	/**
- 	 * Create if doesn't exist 
+	 * Create if doesn't exist
 	 *
 	 * @param umsMemberReceiveAddressDTO
 	 * @return 201 created or 409 conflict
 	 */
 	@PostMapping("")
 	protected ResponseEntity<Void> create(@RequestBody UmsMemberReceiveAddressDTO umsMemberReceiveAddressDTO) {
-    	logger.debug("REST : POST - create");
-		if ( service.create(umsMemberReceiveAddressDTO) ) {
+		logger.debug("REST : POST - create");
+		if (service.create(umsMemberReceiveAddressDTO)) {
 			return ResponseEntity.status(HttpStatus.CREATED).build(); // 201 created
-		}
-		else {
+		} else {
 			return ResponseEntity.status(HttpStatus.CONFLICT).build(); // 409 Conflict
 		}
 	}
@@ -98,61 +95,70 @@ public class UmsMemberReceiveAddressRestController {
 	 * @return 200 updated or created
 	 */
 	@PutMapping("/{id}")
-	protected ResponseEntity<Void> save(@PathVariable Long id, @RequestBody UmsMemberReceiveAddressDTO umsMemberReceiveAddressDTO) {
-    	logger.debug("REST : PUT - save");
+	protected ResponseEntity<Void> save(@PathVariable Long id,
+			@RequestBody UmsMemberReceiveAddressDTO umsMemberReceiveAddressDTO) {
+		logger.debug("REST : PUT - save");
 		service.save(id, umsMemberReceiveAddressDTO);
 		return ResponseEntity.ok().build(); // OK, updated or created
 	}
 
 	/**
- 	 * Update if exists 
+	 * Update if exists
 	 *
 	 * @param umsMemberReceiveAddressDTO
 	 * @return 200 updated or 404 not found
 	 */
 	@PutMapping("")
 	protected ResponseEntity<Void> update(@RequestBody UmsMemberReceiveAddressDTO umsMemberReceiveAddressDTO) {
-    	logger.debug("REST : PUT - update");
-		if ( service.update(umsMemberReceiveAddressDTO) ) {
+		logger.debug("REST : PUT - update");
+		if (service.update(umsMemberReceiveAddressDTO)) {
 			return ResponseEntity.ok().build(); // 200 OK, found and updated
-		}
-		else {
+		} else {
 			return ResponseEntity.notFound().build(); // 404 Not found = "not updated"
 		}
 	}
 
 	/**
- 	 * Partial update for the given PK (if it exists )
+	 * Partial update for the given PK (if it exists )
 	 *
 	 * @param id
 	 * @param umsMemberReceiveAddressDTO
 	 * @return 200 updated or 404 not found
 	 */
 	@PatchMapping("/{id}")
-	protected ResponseEntity<Void> partialUpdate(@PathVariable Long id, @RequestBody UmsMemberReceiveAddressDTO umsMemberReceiveAddressDTO) {
-    	logger.debug("REST : PATCH - partialUpdate");
-    	if ( service.partialUpdate(id, umsMemberReceiveAddressDTO) ) {
-    		return ResponseEntity.ok().build(); // OK, found and updated
-    	}
-    	else {
+	protected ResponseEntity<Void> partialUpdate(@PathVariable Long id,
+			@RequestBody UmsMemberReceiveAddressDTO umsMemberReceiveAddressDTO) {
+		logger.debug("REST : PATCH - partialUpdate");
+		if (service.partialUpdate(id, umsMemberReceiveAddressDTO)) {
+			return ResponseEntity.ok().build(); // OK, found and updated
+		} else {
 			return ResponseEntity.notFound().build(); // 404 Not found = "not updated"
-    	}
+		}
 	}
 
 	/**
-	 * Delete by PK 
+	 * Delete by PK
 	 *
 	 * @param id
 	 * @return 204 deleted or 404 not found
 	 */
 	@DeleteMapping("/{id}")
 	protected ResponseEntity<Void> deleteById(@PathVariable Long id) {
-    	logger.debug("REST : DELETE - deleteById");
-		if ( service.deleteById(id) ) {
+		logger.debug("REST : DELETE - deleteById");
+		if (service.deleteById(id)) {
 			return ResponseEntity.noContent().build(); // 204 No content = "deleted"
-		}
-		else {
+		} else {
 			return ResponseEntity.notFound().build(); // 404 Not found = "not deleted"
+		}
+	}
+
+	@GetMapping("/address/{memberId}")
+	public ResponseEntity<List<UmsMemberReceiveAddressDTO>> getAddresses(@PathVariable("memberId") Long memberId) {
+		List<UmsMemberReceiveAddressDTO> dtos = service.getAddresses(memberId);
+		if (dtos != null) {
+			return ResponseEntity.ok(dtos); // 200 OK, found
+		} else {
+			return ResponseEntity.notFound().build(); // 404 Not found
 		}
 	}
 

@@ -62,7 +62,7 @@ public class PmsSpuInfoRestController {
 	 * @return 200 or 404
 	 */
 	@GetMapping("/{id}")
-	protected ResponseEntity<PmsSpuInfoDTO> findById(@PathVariable Long id) {
+	public ResponseEntity<PmsSpuInfoDTO> findById(@PathVariable Long id) {
 		logger.debug("REST : GET - findById");
 		PmsSpuInfoDTO pmsSpuInfoDTO = service.findById(id);
 		if (pmsSpuInfoDTO != null) {
@@ -164,4 +164,14 @@ public class PmsSpuInfoRestController {
 	// return ResponseEntity.ok(list);
 	// }
 
+	@GetMapping("/getSpuInfoBySkuId/{id}")
+	public ResponseEntity<PmsSpuInfoDTO> getSpuInfoBySkuId(@PathVariable Long id) {
+		logger.debug("REST : GET - findById");
+		PmsSpuInfoDTO pmsSpuInfoDTO = service.getSpuInfoBySkuId(id);
+		if (pmsSpuInfoDTO != null) {
+			return ResponseEntity.ok(pmsSpuInfoDTO); // 200 OK, found
+		} else {
+			return ResponseEntity.notFound().build(); // 404 Not found
+		}
+	}
 }

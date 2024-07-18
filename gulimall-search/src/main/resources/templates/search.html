@@ -64,7 +64,7 @@
         </b>
         <ul>
             <li>
-                <a href="#" class="li_2">你好，请登录</a>
+                <a href="http://auth.gulimall.com:8600/login.html">你好，[[${session.loginUser.username==null?"请登录":session.loginUser.username}]]</a>
             </li>
             <li>
                 <a href="#">免费注册</a>
@@ -399,11 +399,11 @@
 <!--搜索导航-->
 <div class="header_sous">
     <div class="logo">
-        <a href="#"><img src="./image/logo1.jpg" alt=""></a>
+        <a href="http://gulimall.com:8600"><img src="./image/logo1.jpg" alt=""></a>
     </div>
     <div class="header_form">
-        <input type="text" placeholder="手机" />
-        <a href="#">搜索</a>
+        <input id="keyword_input" type="text" placeholder="手机" th:value="${param.keyword}" />
+        <a href="javascript:searchByKeyword()">搜索</a>
     </div>
     <div class="header_ico">
         <div class="header_gw">
@@ -2166,6 +2166,10 @@
     },function(){
         $(this).css("color","#727272")
     })
+
+    function searchByKeyword() {
+        location.href="http://search.gulimall.com:8600/?keyword="+$("#keyword_input").val();
+    }
 </script>
 </body>
 </html>
