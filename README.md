@@ -1,8 +1,10 @@
 Project created date: 2/5/2024
 Project GitHub pubish date: 11/5/2024
 Project Completed Date: 25/7/2024
-
+Index Page
 ![Example Image](https://github.com/Kenny628/gulimall-java-project/blob/main/image/index.png)
+Item Page
+![image](https://github.com/user-attachments/assets/65d289dc-a61e-4449-a8b9-79229928cbf9)
 
 Completed job:
 MySQL databse and sql setup
