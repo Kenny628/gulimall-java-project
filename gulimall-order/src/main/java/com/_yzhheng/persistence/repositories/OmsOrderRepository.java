@@ -4,11 +4,16 @@
  */
 package com._yzhheng.persistence.repositories;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com._yzhheng.persistence.entities.OmsOrder;
 import com._yzhheng.rest.dto.OmsOrderDTO;
+
+import jakarta.transaction.Transactional;
 
 /**
  * Spring Data JPA repository for entity "OmsOrder" <br>
@@ -30,6 +35,14 @@ public interface OmsOrderRepository extends JpaRepository<OmsOrder, Long> {
 
 	@Query(value = "Select * from oms_order where order_sn=:orderSn", nativeQuery = true)
 	OmsOrder getOrderStatus(String orderSn);
+
+	@Query(value = "Select * from oms_order where member_id=:id order by create_time desc", nativeQuery = true)
+	List<OmsOrder> getOrderSnByMemberId(Long id);
+
+	@Transactional
+	@Modifying
+	@Query(value = "UPDATE oms_order SET status=3 where order_sn=:orderSn", nativeQuery = true)
+	Void setOrderStatusToPaid(String orderSn);
 
 	// Insert specific finders here
 

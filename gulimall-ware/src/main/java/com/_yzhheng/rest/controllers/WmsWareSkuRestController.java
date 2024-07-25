@@ -160,12 +160,12 @@ public class WmsWareSkuRestController {
 	}
 
 	@PostMapping("/lock/order")
-	public ResponseEntity<Void> orderLockStock(@RequestBody WareSkuLockVo wareSkuLockVo) {
+	public ResponseEntity<Boolean> orderLockStock(@RequestBody WareSkuLockVo wareSkuLockVo) {
 		try {
 			Boolean stock = service.orderLockStock(wareSkuLockVo);
-			return ResponseEntity.ok().build();
+			return ResponseEntity.ok(stock);
 		} catch (NoStockException e) {
-			return ResponseEntity.notFound().build();
+			return ResponseEntity.ok(false);
 		}
 	}
 

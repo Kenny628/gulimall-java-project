@@ -4,36 +4,44 @@
  */
 package com._yzhheng.persistence.repositories;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import com._yzhheng.persistence.entities.PmsBrand;
 
 /**
- * Spring Data JPA repository for entity "PmsBrand" <br> 
+ * Spring Data JPA repository for entity "PmsBrand" <br>
  * 
  * This repository extends PagingAndSortingRepository interface <br>
  * so it provides by default all the basic CRUD operations : <br>
- *   findById, findAll, save, delete, etc <br> 
+ * findById, findAll, save, delete, etc <br>
  * with pagination and sorting : <br>
- *   findAll(Pageable), findAll(Sort)<br>
+ * findAll(Pageable), findAll(Sort)<br>
  * 
  * This repository can be extended by adding specific "finders" methods<br>
- * To do so, see the "predicates conventions" for "derived query methods" in Spring Data documentation
+ * To do so, see the "predicates conventions" for "derived query methods" in
+ * Spring Data documentation
  * 
  * @author Telosys
  *
  */
 public interface PmsBrandRepository extends JpaRepository<PmsBrand, Long> {
 
-	// Insert specific finders here 
+	@Query(value = "Select * from pms_brand where brand_id IN (:brandIds)", nativeQuery = true)
+	List<PmsBrand> findByMutipleId(ArrayList<String> brandIds);
 
-	//List<PmsBrand> findByXxx(String xxx);
+	// Insert specific finders here
 
-	//List<PmsBrand> findByXxxStartingWith(String xxx);
+	// List<PmsBrand> findByXxx(String xxx);
 
-	//List<PmsBrand> findByXxxContaining(String xxx);
+	// List<PmsBrand> findByXxxStartingWith(String xxx);
 
-	//List<PmsBrand> findByYyy(BigDecimal yyy);
+	// List<PmsBrand> findByXxxContaining(String xxx);
 
-	//List<PmsBrand> findByXxxContainingAndYyy(String xxx, BigDecimal yyy);
+	// List<PmsBrand> findByYyy(BigDecimal yyy);
+
+	// List<PmsBrand> findByXxxContainingAndYyy(String xxx, BigDecimal yyy);
 }

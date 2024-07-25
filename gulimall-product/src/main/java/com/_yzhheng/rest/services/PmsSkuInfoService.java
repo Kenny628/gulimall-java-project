@@ -37,6 +37,7 @@ import com._yzhheng.rest.dto.databaseSpuDto;
 import com._yzhheng.rest.services.commons.GenericService;
 import com._yzhheng.vo.SkuItemVo;
 // import com._yzhheng.vo.SkuItemVo.SpuItemBaseAttrVo;
+import com.alibaba.cloud.commons.lang.StringUtils;
 
 /**
  * REST service for entity "PmsSkuInfo" <br>
@@ -344,9 +345,28 @@ public class PmsSkuInfoService extends GenericService<PmsSkuInfo, PmsSkuInfoDTO>
 		return skuItemVo;
 	}
 
-	public Page<PmsSkuInfo> searchSkuByUserInputedText(Pageable pageable, String userInputedText) {
-		Page<PmsSkuInfo> list = repository.searchSkusBySku_NameInputedByUser(pageable, userInputedText);
+	public Page<PmsSkuInfo> searchSkuByUserInputedText(Pageable pageable, String userInputedText, Long catalog3Id) {
+		Page<PmsSkuInfo> list = null;
+		if (!userInputedText.equals(" ")) {
+			System.out.println("String nothing");
+			list = repository.searchSkusBySku_NameInputedByUser(pageable, userInputedText);
+		} else if (catalog3Id != 0) {
+			System.out.println("String gothing");
+			list = repository.searchSkusBycatalog3Id(pageable, catalog3Id);
+		}
 		return list;
+	}
+
+	public List<PmsSkuInfoDTO> searchALLSkusByUserInputedText(String userInputedText, Long catalog3Id) {
+		List<PmsSkuInfo> infos = repository.searchALLSkusByUserInputedText(userInputedText);
+		if (!userInputedText.equals(" ")) {
+			System.out.println("String nothing");
+			infos = repository.searchALLSkusByUserInputedText(userInputedText);
+		} else if (catalog3Id != 0) {
+			System.out.println("String gothing");
+			infos = repository.searchALLSkusByCatalog3Id(catalog3Id);
+		}
+		return entityListToDtoList(infos);
 	}
 }
 

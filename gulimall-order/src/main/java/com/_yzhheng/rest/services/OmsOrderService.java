@@ -22,6 +22,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,8 @@ import com._yzhheng.rest.dto.OmsOrderItemDTO;
 import com._yzhheng.rest.services.commons.GenericService;
 import com._yzhheng.snowflake.SnowFlakeShortUrl;
 import com._yzhheng.to.OrderCreateTo;
+import com._yzhheng.to.OrderFilterTo;
+import com._yzhheng.to.OrderListTo;
 import com._yzhheng.vo.MemberAddressVo;
 import com._yzhheng.vo.OrderConfirmVo;
 import com._yzhheng.vo.OrderItemVo;
@@ -301,8 +304,8 @@ public class OmsOrderService extends GenericService<OmsOrder, OmsOrderDTO> {
 				lockVo.setLocks(orderItemVos);
 
 				// 远程锁库存
-				ResponseEntity<Void> stock = wareFeignService.orderLockStock(lockVo);
-				if (stock.getStatusCode() == HttpStatusCode.valueOf(200)) {
+				ResponseEntity<Boolean> stock = wareFeignService.orderLockStock(lockVo);
+				if (stock.getBody() == true) {
 
 					// 锁成功
 					submitOrderResponseVo.setOrder(order.getOrder());
@@ -573,6 +576,10 @@ public class OmsOrderService extends GenericService<OmsOrder, OmsOrderDTO> {
 		return entityToDto(repository.getOrderStatus(orderSn));
 	}
 
+	public void setOrderStatusToPaid(String orderSn) {
+		repository.setOrderStatusToPaid(orderSn);
+	}
+
 	public void closeOrder(OmsOrder orderEntity) {
 		// 查询当前这个订单的最新状态
 		OmsOrderDTO order = this.findById(orderEntity.getId());
@@ -584,4 +591,33 @@ public class OmsOrderService extends GenericService<OmsOrder, OmsOrderDTO> {
 		BeanUtils.copyProperties(orderEntity, vo);
 		rabbitTemplate.convertAndSend("order-event-exchange", "order.release.other", vo);
 	}
+
+	public List<OrderFilterTo> getMemberOrderPage() {
+		List<OmsOrder> dto = repository.getOrderSnByMemberId(LoginUserInteceptor.threadLocalUser.get().getId());
+		List<OrderFilterTo> orderList = dto.stream().map((a) -> {
+
+			OrderFilterTo filter = new OrderFilterTo();
+			filter.setOrderSn(a.getOrderSn());
+			filter.setCreateTime(a.getCreateTime());
+			filter.setReceiverName(a.getReceiverName());
+			filter.setPayAmount(a.getPayAmount());
+			filter.setStatus(a.getStatus());
+			return filter;
+
+		}).toList();
+		List<OmsOrderItemDTO> items = omsOrderItemService
+				.findOrderItemByOrderSn(orderList.stream().map(a -> a.getOrderSn()).toList());
+		// List<OrderFilterTo> newOrderList = new ArrayList<>();
+		for (OrderFilterTo order : orderList) {
+			order.setItems((items.stream().filter(a -> a.getOrderSn().equals(order.getOrderSn())).toList()));
+			// newOrderList.add(order);
+		}
+		return orderList;
+	}
+
+	// public List<OmsOrder> returnOrder() {
+	// List<OmsOrder> dto =
+	// repository.getOrderSnByMemberId(LoginUserInteceptor.threadLocalUser.get().getId());
+	// return dto;
+	// }
 }

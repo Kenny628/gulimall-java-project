@@ -462,22 +462,22 @@
 </div>
 <!--********************************************************************************************-->
 <!--谷粒学院自提-->
-<div class="top-4">
+<!-- <div class="top-4">
 	<p>谷粒学院自提</p>
 	<p>省运费·无续重·随时取</p>
 	<p class="xiang">详情</p>
-</div>
+</div> -->
 
 <!--地址-->
 
 
 <!--支付方式-->
-<h4 class="h4">支付方式</h4>
+<!-- <h4 class="h4">支付方式</h4>
 
 <div class="top-6">
 	<p>货到付款</p>
 	<p><span>惠</span>在线支付</p>
-</div>
+</div> -->
 <div class="hh1"></div>
 <!--送货清单-->
 <h4 class="h4" style="margin-top: 5px;">送货清单</h4>
@@ -486,9 +486,9 @@
 		<h5><span class="peisong">配送方式</span><span class="dui"><img
 				src="http://192.168.56.1:9001/static/order/confirm/img/i_03.png"/> 对应商品</span></h5>
 		<div class="box">
-			谷粒学院快递
+			默认
 		</div>
-		<p class="biao">
+		<!-- <p class="biao">
 			<span class="til">标 准 达 ：</span>
 			<span class="con">预计 12月16日[今天] 15:00-19:00 送达</span>
 			<a href="http://192.168.56.1:9001/static/order/confirm/#">修改</a>
@@ -497,13 +497,13 @@
 			<img src="http://192.168.56.1:9001/static/order/confirm/img/im_06.png"/>
 			<span>京准达 标准达</span>
 			<span style="color: black;"> 配送服务全面升级</span>
-		</div>
-		<div class="hh1"></div>
+		</div> -->
+		<!-- <div class="hh1"></div>
 		<p class="tui">
 			<span class="til">退换无忧：</span>
 			<span class="con">
 							<input type="checkbox"/>
-							自签收后7天内退货，15天内换<span style="font-size: 12px;margin-left: 5px"> ￥ 0.50</span><br/>
+							自签收后7天内退货，15天内换<span style="font-size: 12px;margin-left: 5px"> Rm  0.50</span><br/>
 						<span class="nul">货，</span>可享1次上门取件服务 ﹀
 						</span>
 
@@ -512,20 +512,21 @@
 			<span>京准达运费大促（限自营中小件）</span>
 		</div>
 
-		</p>
-		<p class="kg" style="color:#666666;margin-top: 13px;font-size: 12px">总重量 :<span
-				style="color:#999999;font-size: 12px">0.095kg</span></p>
+		</p> -->
+		<!-- <p class="kg" style="color:#666666;margin-top: 13px;font-size: 12px">总重量 :<span
+				style="color:#999999;font-size: 12px">0.095kg</span></p> -->
 	</div>
 	<div class="to_right">
-		<h5>商家：谷粒学院自营</h5>
+		<h5>商家：谷粒商城自营</h5>
 		<div>
-			<button>换购</button>
-			<span>已购满20.00元，再加49.90元，可返回购物车领取赠品</span></div>
+			<button>商品</button>
+			<!-- <span>已购满20.00元，再加49.90元，可返回购物车领取赠品</span> -->
+		</div>
 		<div class="yun1" th:each="item:${confirmOrder.items}">
 			<img th:src="${item.image}" class="yun"/>
 			<div class="mi">
-				<p>[[${item.title}]]<span style="color: red;" th:text="'￥' + ${#numbers.formatDecimal(item.price,3,2)}"> ￥ 499.00</span>
-					<span> [[${item.count}]] </span>
+				<p>[[${item.title}]]<span style="color: red;" th:text="'Rm ' + ${#numbers.formatDecimal(item.price,3,2)}"> Rm  499.00</span>
+					<span> 件数： [[${item.count}]] </span>
 			<!-- TODO: Weigh & Stock	 -->
 				</p>
 		
@@ -536,7 +537,7 @@
 		<div class="hh1"></div>
 	</div>
 </div>
-<div class="bto">
+<!-- <div class="bto">
 	<div class="hh2"></div>
 	<h4 class="float">发票信息</h4>
 	<div class="note float"><img src="http://192.168.56.1:9001/static/order/confirm/img/i_11.png"/> <span>开企业抬头发票须填写纳税人识别号，以免影响报销</span></div>
@@ -561,13 +562,14 @@
 		<input type="checkbox"/>
 		<span>优惠组合推荐</span>
 	</div>
-</div>
+</div> -->
+<br>
 <div class="xia">
 	<div class="qian">
 		<p class="qian_y">
 			<span>[[${confirmOrder.count}]]</span>
 			<span>件商品，总商品金额：</span>
-			<span class="rmb">￥[[${#numbers.formatDecimal(confirmOrder.total, 1, 2)}]]</span>
+			<span class="rmb">Rm [[${#numbers.formatDecimal(confirmOrder.total, 1, 2)}]]</span>
 		</p>
 		<p class="qian_y">
 			<span>返现：</span>
@@ -575,7 +577,7 @@
 		</p>
 		<p class="qian_y">
 			<span>运费： </span>
-			<span class="rmb"> &nbsp ￥<b id="fare"></b></span>
+			<span class="rmb"> &nbsp Rm <b id="fare"></b></span>
 		</p>
 		<p class="qian_y">
 			<span>服务费： </span>
@@ -589,7 +591,7 @@
 	</div>
 
 	<div class="yfze">
-		<p class="yfze_a"><span class="z">应付总额：</span><span class="hq">￥<b id="payPrice">[[${#numbers.formatDecimal(confirmOrder.payPrice, 1, 2)}]]</b></span>
+		<p class="yfze_a"><span class="z">应付总额：</span><span class="hq">Rm <b id="payPrice">[[${#numbers.formatDecimal(confirmOrder.payPrice, 1, 2)}]]</b></span>
 		</p>
 		<p class="yfze_b">寄送至： <span id="receiveAddress"></span> 收货人：<span id="receiver"></span></p>
 	</div>
@@ -602,7 +604,7 @@
 </div>
 </div>
 
-<div class="headera">
+<!-- <div class="headera">
 	<div class="Logo-tu">
 		<span><img src="http://192.168.56.1:9001/static/order/confirm/img/service_items_1.png"/></span>
 		<span><img src="http://192.168.56.1:9001/static/order/confirm/img/service_items_2.png"/></span>
@@ -803,7 +805,7 @@
 		<img src="http://192.168.56.1:9001/static/order/confirm/img/5698dc16Nb2ab99df.jpg"/>
 		<img src="http://192.168.56.1:9001/static/order/confirm/img/56a89b8fNfbaade9a.jpg"/>
 	</p>
-</div>
+</div> -->
 <script>
 	$(document).ready(function () {
 		$('.header-right li:nth-of-type(6)').hover(function () {

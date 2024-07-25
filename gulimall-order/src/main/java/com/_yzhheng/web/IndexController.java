@@ -1,5 +1,7 @@
 package com._yzhheng.web;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,11 +11,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com._yzhheng.exception.NoStockException;
+import com._yzhheng.persistence.entities.OmsOrder;
+import com._yzhheng.rest.dto.OmsOrderDTO;
+import com._yzhheng.rest.dto.OmsOrderItemDTO;
 import com._yzhheng.rest.services.OmsOrderService;
+import com._yzhheng.to.OrderFilterTo;
 import com._yzhheng.vo.OrderConfirmVo;
 import com._yzhheng.vo.OrderItemVo;
 import com._yzhheng.vo.OrderSubmitVo;
 import com._yzhheng.vo.SubmitOrderResponseVo;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -36,9 +44,14 @@ public class IndexController {
         return "confirm";
     }
 
-    @GetMapping("/payment")
-    public String toPayment() {
-        return "payment";
+    @PostMapping("/payment")
+    public String toPayment(Model model, @RequestParam("orderSn") String orderSn,
+            @RequestParam("payAmount") String payAmount) {
+        System.out.println("Order SN: " + orderSn);
+        System.out.println("Pay Amount: " + payAmount);
+        model.addAttribute("orderSn", orderSn);
+        model.addAttribute("payAmount", payAmount);
+        return "checkout";
     }
 
     @PostMapping("/submitOrder")
@@ -81,4 +94,20 @@ public class IndexController {
             return "redirect:http://order.gulimall.com:8600/toTrade";
         }
     }
+
+    /**
+     * 获取当前用户的所有订单
+     * 
+     * @return
+     */
+    @GetMapping("/memberOrder.html")
+    public String memberOrder(@RequestParam(value = "pageNum", required = false, defaultValue = "0") Integer pageNum,
+            Model model) {
+        // List<OmsOrder> orderDetails = omsOrderService.returnOrder();
+        List<OrderFilterTo> orderDetails = omsOrderService.getMemberOrderPage();
+        model.addAttribute("orderDetails", orderDetails);
+        // model.addAttribute("orderItemDetails", orderItemDetails);
+        return "list";
+    }
+
 }

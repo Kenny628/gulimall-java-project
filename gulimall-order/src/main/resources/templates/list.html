@@ -201,7 +201,7 @@
           </ul>
         </div>
         
-        <!-- <table class="table" th:each="order: ${pageUtil.list}">
+        <table class="table" th:each="order: ${orderDetails}">
           <tr>
             <td colspan="7" style="background:#F7F7F7" >
               <span style="color:#AAAAAA" th:text="${order.createTime}">2017-12-09 20:50:10</span>
@@ -210,7 +210,8 @@
               <i class="table_i5 isShow"></i>
             </td>
           </tr>
-          <tr class="tr" th:each="item: ${order.items}">
+          <!-- <tr class="tr" th:each="item: ${order.items}"> -->
+            <tr class="tr" th:each="item, itemStat: ${order.items}">
             <td colspan="3">
               <img style="height: 60px; width: 60px;" src="http://192.168.56.1:9001/static/order/list/img/ding.jpg" th:src="${item.skuPic}" alt="" class="img">
               <div>
@@ -221,13 +222,13 @@
               <div style="margin-left:15px;">x[[${item.skuQuantity}]]</div>
               <div style="clear:both"></div>
             </td>
-            <td>[[${order.receiverName}]]<i><i class="table_i1"></i></i></td>
-            <td style="padding-left:10px;color:#AAAAB1;">
+            <td th:if="${itemStat.index==0}" th:rowspan="{itemStat.size}">[[${order.receiverName}]]<i><i class="table_i1"></i></i></td>
+            <td th:if="${itemStat.index==0}" th:rowspan="{itemStat.size}"style="padding-left:10px;color:#AAAAB1;">
               <p style="margin-bottom:5px;">总额 ￥[[${#numbers.formatDecimal(order.payAmount,3,2)}]]</p>
               <hr style="width:90%;">
               <p>在线支付</p>
             </td>
-            <td>
+            <td th:if="${itemStat.index==0}" th:rowspan="{itemStat.size}">
               <ul>
                 <li style="color:#71B247;" th:if="${order.status==0}">待付款</li>
                 <li style="color:#71B247;" th:if="${order.status==1}">已付款</li>
@@ -264,13 +265,13 @@
                 <li class="tdLi">订单详情</li>
               </ul>
             </td>
-            <td>
+            <td th:if="${itemStat.index==0}" th:rowspan="{itemStat.size}">
               <button>确认收货</button>
               <p style="margin:4px 0; ">取消订单</p>
               <p>催单</p>
             </td>
           </tr>
-        </table> -->
+        </table>
 
 
         <div class="order_btm">

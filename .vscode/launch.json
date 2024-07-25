@@ -2,6 +2,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "SpringBootStarter",
+      "request": "launch",
+      "mainClass": "com._yzhheng.SpringBootStarter",
+      "projectName": "gulimall-coupun"
+    },
+    {
+      "type": "java",
       "name": "GulimallOrderApplication",
       "request": "launch",
       "mainClass": "com._yzhheng.gulimallorder.GulimallOrderApplication",

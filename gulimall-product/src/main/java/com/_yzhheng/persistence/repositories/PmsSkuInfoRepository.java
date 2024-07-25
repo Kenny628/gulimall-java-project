@@ -43,6 +43,15 @@ public interface PmsSkuInfoRepository extends JpaRepository<PmsSkuInfo, Long> {
 	Page<PmsSkuInfo> searchSkusBySku_NameInputedByUser(Pageable pageable, String sku_name);
 	// Insert specific finders here
 
+	@Query(value = "select * from pms_sku_info where MATCH(sku_name) AGAINST (:userInputedText)", nativeQuery = true)
+	List<PmsSkuInfo> searchALLSkusByUserInputedText(String userInputedText);
+
+	@Query(value = "select * from pms_sku_info where catalog_id=:catalog3Id", nativeQuery = true)
+	Page<PmsSkuInfo> searchSkusBycatalog3Id(Pageable pageable, Long catalog3Id);
+
+	@Query(value = "select * from pms_sku_info where catalog_id=:catalog3Id", nativeQuery = true)
+	List<PmsSkuInfo> searchALLSkusByCatalog3Id(Long catalog3Id);
+
 	// List<PmsSkuInfo> findByXxx(String xxx);
 
 	// List<PmsSkuInfo> findByXxxStartingWith(String xxx);

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -165,12 +166,33 @@ public class PmsSkuInfoRestController {
 	@GetMapping("/searchSku/{userInputedText}")
 	public ResponseEntity<Page<PmsSkuInfoDTO>> searchSkuByUserInputedText(@PathVariable String userInputedText,
 			@RequestParam(defaultValue = "0") int pageNumber,
-			@RequestParam(defaultValue = "10") int pageSize) {
+			@RequestParam(defaultValue = "10") int pageSize,
+			@RequestParam(defaultValue = "0") Long catalog3Id,
+			@RequestParam(value = "sort", required = false, defaultValue = "defaultSort") String sort) {
 		// TODO: Learn PageRequest and Pageable
-		Pageable pageable = PageRequest.of(pageNumber, pageSize);
-		Page<PmsSkuInfo> page = service.searchSkuByUserInputedText(pageable, userInputedText);
+		Pageable pageable = PageRequest.of(pageNumber, pageSize, getSortOrder(sort));
+		Page<PmsSkuInfo> page = service.searchSkuByUserInputedText(pageable, userInputedText, catalog3Id);
 		// TODO: Learn modelMapper
 		return ResponseEntity.ok(page.map(p -> modelMapper.map(p, PmsSkuInfoDTO.class)));
+	}
+
+	private Sort getSortOrder(String sort) {
+		switch (sort) {
+			case "priceLowToHigh":
+				return Sort.by("price").ascending();
+			case "priceHighToLow":
+				return Sort.by("price").descending();
+			case "defaultSort":
+			default:
+				return Sort.by("sku_title").ascending();
+		}
+	}
+
+	@GetMapping("/searchAllSku/{userInputedText}")
+	public ResponseEntity<List<PmsSkuInfoDTO>> searchALLSkusByUserInputedText(@PathVariable String userInputedText,
+			@RequestParam(defaultValue = "0") Long catalog3Id) {
+		List<PmsSkuInfoDTO> dtos = service.searchALLSkusByUserInputedText(userInputedText, catalog3Id);
+		return ResponseEntity.ok(dtos);
 	}
 
 	// private PmsSkuInfoDTO convertToDto(PmsSkuInfo user) {

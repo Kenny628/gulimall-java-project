@@ -180,6 +180,11 @@ public class OmsOrderItemService extends GenericService<OmsOrderItem, OmsOrderIt
 		return true; // always created
 	}
 
+	public List<OmsOrderItemDTO> findOrderItemByOrderSn(List<String> orderSn) {
+		logger.debug("findAll()");
+		Iterable<OmsOrderItem> all = repository.findOrderItemByOrderSn(orderSn);
+		return entityListToDtoList(all);
+	}
 	// -----------------------------------------------------------------------------------------
 	// Specific "finders"
 	// -----------------------------------------------------------------------------------------

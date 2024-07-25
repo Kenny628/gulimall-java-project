@@ -10,5 +10,5 @@ import com._yzhheng.vo.WareSkuLockVo;
 @FeignClient("gulimall-ware")
 public interface WareFeignService {
     @PostMapping("/api/v1/WmsWareSku/lock/order")
-    public ResponseEntity<Void> orderLockStock(@RequestBody WareSkuLockVo wareSkuLockVo);
+    public ResponseEntity<Boolean> orderLockStock(@RequestBody WareSkuLockVo wareSkuLockVo);
 }

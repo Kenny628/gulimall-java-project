@@ -16,12 +16,17 @@ public class LoginUserInteceptor implements HandlerInterceptor {
             throws Exception {
         // TODO Auto-generated method stub
         String uri = request.getRequestURI();
+        System.out.println("URI: " + uri);
         AntPathMatcher antPathMatcher = new AntPathMatcher();
         // 排除掉根据订单号查询订单数据，原因feign需要过滤器登录
         boolean match = antPathMatcher.match("/api/v1/OmsOrder/orderNumber/**", uri);
         boolean match1 = antPathMatcher.match("/payment", uri);
         boolean match2 = antPathMatcher.match("/charge", uri);
-        if (match || match1 || match2) {
+        boolean match3 = antPathMatcher.match("/webhook", uri);
+        boolean match4 = antPathMatcher.match("/gulimall-order/**",
+                uri);
+        boolean match5 = antPathMatcher.match("/hiiii", uri);
+        if (match || match1 || match2 || match3 || match4 || match5) {
             return true;
         }
         UmsMemberDTO member = (UmsMemberDTO) request.getSession().getAttribute("loginUser");

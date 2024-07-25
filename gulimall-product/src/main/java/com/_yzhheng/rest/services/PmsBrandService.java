@@ -4,9 +4,9 @@
  */
 package com._yzhheng.rest.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,8 @@ import com._yzhheng.rest.services.commons.GenericService;
 /**
  * REST service for entity "PmsBrand" <br>
  * 
- * This service provides all the necessary operations required by the REST controller <br>
+ * This service provides all the necessary operations required by the REST
+ * controller <br>
  * 
  * @author Telosys
  *
@@ -41,7 +42,7 @@ public class PmsBrandService extends GenericService<PmsBrand, PmsBrandDTO> {
 		super(PmsBrand.class, PmsBrandDTO.class);
 		this.repository = repository;
 	}
-	
+
 	/**
 	 * Returns the entity ID object from the given DTO
 	 *
@@ -66,7 +67,7 @@ public class PmsBrandService extends GenericService<PmsBrand, PmsBrandDTO> {
 	/**
 	 * Finds the entity identified by the given PK
 	 *
-	 * @param brandId 
+	 * @param brandId
 	 * @return the entity or null if not found
 	 */
 	public PmsBrandDTO findById(Long brandId) {
@@ -76,17 +77,33 @@ public class PmsBrandService extends GenericService<PmsBrand, PmsBrandDTO> {
 		return entityToDto(optionalEntity);
 	}
 
+	public List<PmsBrandDTO> findByMutipleId(ArrayList<String> brandIds) {
+		// Long entityId = brandId;
+		// logger.debug("findById({})", entityId);
+		// String brandIdList = "";
+		// for (String brandId : brandIds) {
+		// brandIdList = brandIdList + brandId + ',';
+		// }
+		// String result = "(" + String.join(",", brandIds) + ")";
+		// System.out.println("Printed: " + brandIds);
+		List<PmsBrand> brands = repository.findByMutipleId(brandIds);
+		for (PmsBrand brand : brands) {
+			System.out.println("Nameeeeee:" + brand.getName());
+		}
+		return entityListToDtoList(brands);
+	}
+
 	/**
 	 * Saves the given entity with the given PK <br>
 	 * "UPSERT" operation (updated if it exists or created if it does not exist)
 	 *
-	 * @param brandId 
-	 * @param dto 
+	 * @param brandId
+	 * @param dto
 	 */
 	public void save(Long brandId, PmsBrandDTO dto) {
 		Long entityId = brandId;
 		logger.debug("save({},{})", entityId, dto);
-		// force PK in DTO (just to be sure to conform with the given PK) 
+		// force PK in DTO (just to be sure to conform with the given PK)
 		dto.setBrandId(brandId);
 		repository.save(dtoToEntity(dto));
 	}
@@ -110,7 +127,7 @@ public class PmsBrandService extends GenericService<PmsBrand, PmsBrandDTO> {
 	/**
 	 * Updates partially the given entity if it exists
 	 *
-	 * @param brandId 
+	 * @param brandId
 	 * @param dto
 	 * @return true if updated, false if not found
 	 */
@@ -146,7 +163,7 @@ public class PmsBrandService extends GenericService<PmsBrand, PmsBrandDTO> {
 	/**
 	 * Deletes an entity by its PK
 	 *
-	 * @param brandId 
+	 * @param brandId
 	 * @return true if deleted, false if not found
 	 */
 	public boolean deleteById(Long brandId) {
@@ -163,25 +180,26 @@ public class PmsBrandService extends GenericService<PmsBrand, PmsBrandDTO> {
 	// -----------------------------------------------------------------------------------------
 	// Specific "finders"
 	// -----------------------------------------------------------------------------------------
-/***
-	public List<PmsBrandDTO> findByTitle(String title) {
-		logger.debug("findByTitle({})", title);
-		// List<PmsBrand> list = repository.findByTitle(title);
-		List<PmsBrand> list = repository.findByTitleContaining(title);
-		return entityListToDtoList(list);
-	}
-
-	public List<PmsBrandDTO> findByPrice(BigDecimal price) {
-		logger.debug("findByPrice({})", price);
-		// List<PmsBrand> list = repository.findByTitle(title);
-		List<PmsBrand> list = repository.findByPrice(price);
-		return entityListToDtoList(list);
-	}
-
-	public List<PmsBrandDTO> findByTitleAndPrice(String title, BigDecimal price) {
-		logger.debug("findByTitleAndPrice({}, {})", title, price);
-		List<PmsBrand> list = repository.findByTitleContainingAndPrice(title, price);
-		return entityListToDtoList(list);
-	}
-***/
+	/***
+	 * public List<PmsBrandDTO> findByTitle(String title) {
+	 * logger.debug("findByTitle({})", title);
+	 * // List<PmsBrand> list = repository.findByTitle(title);
+	 * List<PmsBrand> list = repository.findByTitleContaining(title);
+	 * return entityListToDtoList(list);
+	 * }
+	 * 
+	 * public List<PmsBrandDTO> findByPrice(BigDecimal price) {
+	 * logger.debug("findByPrice({})", price);
+	 * // List<PmsBrand> list = repository.findByTitle(title);
+	 * List<PmsBrand> list = repository.findByPrice(price);
+	 * return entityListToDtoList(list);
+	 * }
+	 * 
+	 * public List<PmsBrandDTO> findByTitleAndPrice(String title, BigDecimal price)
+	 * {
+	 * logger.debug("findByTitleAndPrice({}, {})", title, price);
+	 * List<PmsBrand> list = repository.findByTitleContainingAndPrice(title, price);
+	 * return entityListToDtoList(list);
+	 * }
+	 ***/
 }

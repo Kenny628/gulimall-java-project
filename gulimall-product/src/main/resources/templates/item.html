@@ -57,7 +57,7 @@
 							</li>
 						</ul>
 						<ul class="header_ul_right">
-							<li style="border: 0;">            <a href="http://auth.gulimall.com:8600/login.html">你好，[[${session.loginUser.username==null?"请登录":session..username}]]</a></li>
+							<li style="border: 0;">            <a href="http://auth.gulimall.com:8600/login.html">你好，[[${session.loginUser==null?"请登录":session.username}]]</a></li>
 							<li><a href="http://192.168.56.1:9001/static/item/../注册页面\index.html" style="color: red;">免费注册</a> |</li>
 							<li><a href="http://192.168.56.1:9001/static/item/javascript:;" class="aa">我的订单</a> |</li>
 							<li class="jingdong"><a href="http://192.168.56.1:9001/static/item/javascript:;">我的京东</a><span class="glyphicon glyphicon-menu-down">|</span>
@@ -251,15 +251,15 @@
 				<nav>
 				<div class="nav_min">
 					<div class="nav_top">
-						<div class="nav_top_one"><a href="http://192.168.56.1:9001/static/item/#"><img src="http://192.168.56.1:9001/static/item/img/111.png"/></a></div>
-						<div class="nav_top_two"><input type="text"/><button>搜索</button></div>
-						<div class="nav_top_three"><a href="http://cart.gulimall.com:8600/cart.html">我的购物车</a><span class="glyphicon glyphicon-shopping-cart"></span>
-							<div class="nav_top_three_1">
+						<div class="nav_top_one"><a href="http://192.168.56.1:9001/static/item/#"><img src="http://192.168.56.1:9001/static/index/img/logo.jpg"/></a></div>
+						<div class="nav_top_two"><input id="searchText" type="text" placeholder=""><button onclick="search()">搜索</button></div>
+						<div class="nav_top_three"><a href="http://cart.gulimall.com:8600/cart.html">我的购物车</a>
+							<!-- <div class="nav_top_three_1">
 								<img src="http://192.168.56.1:9001/static/item/img/44.png"/>购物车还没有商品，赶紧选购吧！
-							</div>
+							</div> -->
 						</div>
 					</div>
-					<div class="nav_down">
+					<!-- <div class="nav_down">
 						<ul class="nav_down_ul">
 							<li class="nav_down_ul_1" style="width: 24%;float: left;"><a href="http://192.168.56.1:9001/static/item/javascript:;">全部商品分类</a>
 
@@ -273,14 +273,14 @@
 							<li class="ul_li" style="border-right: 1px solid lavender;"><a href="http://192.168.56.1:9001/static/item/javascript:;">拍卖</a></li>
 							<li class="ul_li"><a href="http://192.168.56.1:9001/static/item/javascript:;">金融</a></li>
 						</ul>
-					</div>
+					</div> -->
 				</div>
 			</nav>
 
 				</div>
 
-
-			<div class="crumb-wrap">
+<br>
+			<!-- <div class="crumb-wrap">
 			<div class="w">
 				<div class="crumb">
 					<div class="crumb-item">
@@ -421,7 +421,7 @@
 				</div>
 
 			</div>
-		</div>
+		</div> -->
 <div class="Shop">
 		<div class="box">
 			<div class="box-one ">
@@ -474,10 +474,10 @@
 						<div class="box-name" th:text="${item.getInfo().getSkuTitle()}">
 							华为 HUAWEI Mate 10 6GB+128GB 亮黑色 移动联通电信4G手机 双卡双待
 						</div>
-						<div class="box-hide" th:text="${item.info.skuSubtitle}">预订用户预计11月30日左右陆续发货！麒麟970芯片！AI智能拍照！
+						<!-- <div class="box-hide" th:text="${item.info.skuSubtitle}">预订用户预计11月30日左右陆续发货！麒麟970芯片！AI智能拍照！
 							<a href="http://192.168.56.1:9001/static/item/"><u></u></a>
-						</div>
-						<div class="box-yuyue">
+						</div> -->
+						<!-- <div class="box-yuyue">
 							<div class="yuyue-one">
 								<img src="http://192.168.56.1:9001/static/item/img/7270ffc3baecdd448958f9f5e69cf60f.png" alt="" /> 预约抢购
 							</div>
@@ -495,32 +495,32 @@
 									</li>
 								</ul>
 							</div>
-						</div>
+						</div> -->
 						<div class="box-summary clear">
 							<ul>
-								<li>京东价</li>
+								<li>价格</li>
 								<li>
-									<span>￥</span>
+									<span>RM</span>
 									<span th:text="${item.info.price}">4499.00</span>
 								</li>
+									<!-- <li>
+										预约享资格
+									</li> -->
 								<li>
-									预约享资格
-								</li>
-								<li>
-									<a href="http://192.168.56.1:9001/static/item/">
+									<!-- <a href="http://192.168.56.1:9001/static/item/">
 										预约说明
-									</a>
+									</a> -->
 								</li>
 							</ul>
 						</div>
 						<div class="box-wrap clear">
 							<div class="box-wrap-one clear">
-								<ul>
+								<!-- <ul>
 									<li>增值业务</li>
 									<li><img src="http://192.168.56.1:9001/static/item/img/90a6fa41d0d46b4fb0ff6907ca17c478.png" /></li>
 									<li><img src="http://192.168.56.1:9001/static/item/img/2e19336b961586468ef36dc9f7199d4f.png" /></li>
 									<li><img src="http://192.168.56.1:9001/static/item/img/1f80c3d6fabfd3418e54b005312c00b5.png" /></li>
-								</ul>
+								</ul> -->
 							</div>
 						</div>
 
@@ -529,7 +529,7 @@
 								<li>配送至</li>
 								<li class="box-stock-li">
 									<div class="box-stock-one">
-										北京朝阳区管庄
+										马来西亚
 										<img src="http://192.168.56.1:9001/static/item/img/4a79b87a68623d4e8a73aff3e25fa99b.png" alt="" class="img" />
 									</div>
 									<div class="box-stock-two">
@@ -539,7 +539,7 @@
 												<img src="http://192.168.56.1:9001/static/item/img/4a79b87a68623d4e8a73aff3e25fa99b.png" alt="" class="box-stock-two-img"/>
 											</dt>
 											<dd>
-												<div class="box-stock-dd">
+												<!-- <div class="box-stock-dd">
 													<div class="box-stock-top">
 														<div class="box-stock-div">北京</div>
 														<div class="box-stock-div">朝阳区</div>
@@ -571,7 +571,7 @@
 														</div>
 
 													</div>
-												</div>
+												</div> -->
 											</dd>
 										</dl>
 
@@ -587,7 +587,7 @@
 							<ul class="box-ul">
 								<li></li>
 								<li>
-									由<span>京东</span> 发货，并提供售后服务
+									RM5.00运费
 								</li>
 							</ul>
 						</div>
@@ -636,22 +636,22 @@
 
 						<div class="box-footer-zo">
 							<div class="box-footer clear">
-								<dl>
+								<!-- <dl>
 									<dt>本地活动</dt>
 									<dd>
 										<a href="http://192.168.56.1:9001/static/item/">
 											·1元500MB激活到账30元 >>
 										</a>
 									</dd>
-								</dl>
+								</dl> -->
 							</div>
 
 							<div class="box-footer">
-								<dl>
+								<!-- <dl>
 									<dt>温馨提示</dt>
 									<dd>·本商品不能使用 东券 京券</dd>
 									<dd>·请完成预约后及时抢购！</dd>
-								</dl>
+								</dl> -->
 							</div>
 						</div>
 					</div>
@@ -659,11 +659,11 @@
 				</div>
 			</div>
 			<!--欲约抢购流程-->
-			<div class="qianggoulioucheng">
+			<!-- <div class="qianggoulioucheng">
 				<div class="lioucheng">
 					<h3>欲约抢购流程</h3>
 				</div>
-				<!--抢购步骤-->
+
 				<ul class="qianggoubuzhao">
 					<li>
 						<img src="http://192.168.56.1:9001/static/item/img/shop_03.png" />
@@ -694,7 +694,7 @@
 						</dl>
 					</li>
 				</ul>
-			</div>
+			</div> -->
 
 			<div class="ShopXiangqing">
 				<div class="allLeft">
@@ -784,17 +784,17 @@
 						<li class="baozhang">
 							<a href="http://192.168.56.1:9001/static/item/##">售后保障</a>
 						</li>
-						<li class="pingjia">
+						<!-- <li class="pingjia">
 							<a href="http://192.168.56.1:9001/static/item/##">商品评价(4万+)</a>
 						</li>
 						<li class="shuoming">
 							<a href="http://192.168.56.1:9001/static/item/##">预约说明</a>
-						</li>
+						</li> -->
 
 					</ul>
-					<button class="Lijiyuyuessss">
+					<!-- <button class="Lijiyuyuessss">
 							立即预约
-						</button>
+						</button> -->
 					<ul class="shopjieshaos posi" style="display: none;">
 						<li class="jieshoa" style="background: #e4393c;">
 							<a href="http://192.168.56.1:9001/static/item/#li1" style="color: white;">商品介绍</a>
@@ -1304,6 +1304,11 @@
 			var skuId=$(this).attr("skuId");
 			location.href="http://cart.gulimall.com:8600/addToCart?skuId="+skuId+"&num="+num;
 		})
+		function search() {
+      var keyword=$("#searchText").val()
+      // window.location.href="http://search.gulimall.com:8600/search.html?keyword="+keyword;
+      window.location.href="http://search.gulimall.com:8600?keyword="+keyword;
+  }
 		</script>
 
 </html>

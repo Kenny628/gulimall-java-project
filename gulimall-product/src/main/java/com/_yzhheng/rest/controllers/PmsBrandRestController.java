@@ -4,6 +4,7 @@
  */
 package com._yzhheng.rest.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -29,9 +30,9 @@ import com._yzhheng.rest.services.PmsBrandService;
 public class PmsBrandRestController {
 
 	private static final Logger logger = LoggerFactory.getLogger(PmsBrandRestController.class);
-	
-	private PmsBrandService service ; // injected
-	
+
+	private PmsBrandService service; // injected
+
 	/**
 	 * Constructor (usable for Dependency Injection)
 	 *
@@ -41,7 +42,7 @@ public class PmsBrandRestController {
 		super();
 		this.service = service;
 	}
-    
+
 	/**
 	 * Get ALL
 	 *
@@ -49,43 +50,47 @@ public class PmsBrandRestController {
 	 */
 	@GetMapping("")
 	protected ResponseEntity<List<PmsBrandDTO>> findAll() {
-    	logger.debug("REST : GET - findAll");
-    	List<PmsBrandDTO> list = service.findAll();
-    	return ResponseEntity.ok(list); // always 200
-    }
-    
-    /**
-     * Get ONE identified by the given PK
+		logger.debug("REST : GET - findAll");
+		List<PmsBrandDTO> list = service.findAll();
+		return ResponseEntity.ok(list); // always 200
+	}
+
+	@PostMapping("/brandsIds")
+	public ResponseEntity<List<PmsBrandDTO>> findByMutipleId(@RequestBody ArrayList<String> brandIds) {
+		logger.debug("REST : GET - findAll");
+		List<PmsBrandDTO> list = service.findByMutipleId(brandIds);
+		return ResponseEntity.ok(list); // always 200
+	}
+
+	/**
+	 * Get ONE identified by the given PK
 	 *
 	 * @param brandId
-     * @return 200 or 404 
-     */
-    @GetMapping("/{brandId}")
-    protected ResponseEntity<PmsBrandDTO> findById(@PathVariable Long brandId) {
-    	logger.debug("REST : GET - findById");
-    	PmsBrandDTO pmsBrandDTO = service.findById(brandId);
-		if ( pmsBrandDTO != null ) {
+	 * @return 200 or 404
+	 */
+	@GetMapping("/{brandId}")
+	protected ResponseEntity<PmsBrandDTO> findById(@PathVariable Long brandId) {
+		logger.debug("REST : GET - findById");
+		PmsBrandDTO pmsBrandDTO = service.findById(brandId);
+		if (pmsBrandDTO != null) {
 			return ResponseEntity.ok(pmsBrandDTO); // 200 OK, found
-		}
-		else {
+		} else {
 			return ResponseEntity.notFound().build(); // 404 Not found
-		}		
-    }
+		}
+	}
 
-    
 	/**
- 	 * Create if doesn't exist 
+	 * Create if doesn't exist
 	 *
 	 * @param pmsBrandDTO
 	 * @return 201 created or 409 conflict
 	 */
 	@PostMapping("")
 	protected ResponseEntity<Void> create(@RequestBody PmsBrandDTO pmsBrandDTO) {
-    	logger.debug("REST : POST - create");
-		if ( service.create(pmsBrandDTO) ) {
+		logger.debug("REST : POST - create");
+		if (service.create(pmsBrandDTO)) {
 			return ResponseEntity.status(HttpStatus.CREATED).build(); // 201 created
-		}
-		else {
+		} else {
 			return ResponseEntity.status(HttpStatus.CONFLICT).build(); // 409 Conflict
 		}
 	}
@@ -99,30 +104,29 @@ public class PmsBrandRestController {
 	 */
 	@PutMapping("/{brandId}")
 	protected ResponseEntity<Void> save(@PathVariable Long brandId, @RequestBody PmsBrandDTO pmsBrandDTO) {
-    	logger.debug("REST : PUT - save");
+		logger.debug("REST : PUT - save");
 		service.save(brandId, pmsBrandDTO);
 		return ResponseEntity.ok().build(); // OK, updated or created
 	}
 
 	/**
- 	 * Update if exists 
+	 * Update if exists
 	 *
 	 * @param pmsBrandDTO
 	 * @return 200 updated or 404 not found
 	 */
 	@PutMapping("")
 	protected ResponseEntity<Void> update(@RequestBody PmsBrandDTO pmsBrandDTO) {
-    	logger.debug("REST : PUT - update");
-		if ( service.update(pmsBrandDTO) ) {
+		logger.debug("REST : PUT - update");
+		if (service.update(pmsBrandDTO)) {
 			return ResponseEntity.ok().build(); // 200 OK, found and updated
-		}
-		else {
+		} else {
 			return ResponseEntity.notFound().build(); // 404 Not found = "not updated"
 		}
 	}
 
 	/**
- 	 * Partial update for the given PK (if it exists )
+	 * Partial update for the given PK (if it exists )
 	 *
 	 * @param brandId
 	 * @param pmsBrandDTO
@@ -130,28 +134,26 @@ public class PmsBrandRestController {
 	 */
 	@PatchMapping("/{brandId}")
 	protected ResponseEntity<Void> partialUpdate(@PathVariable Long brandId, @RequestBody PmsBrandDTO pmsBrandDTO) {
-    	logger.debug("REST : PATCH - partialUpdate");
-    	if ( service.partialUpdate(brandId, pmsBrandDTO) ) {
-    		return ResponseEntity.ok().build(); // OK, found and updated
-    	}
-    	else {
+		logger.debug("REST : PATCH - partialUpdate");
+		if (service.partialUpdate(brandId, pmsBrandDTO)) {
+			return ResponseEntity.ok().build(); // OK, found and updated
+		} else {
 			return ResponseEntity.notFound().build(); // 404 Not found = "not updated"
-    	}
+		}
 	}
 
 	/**
-	 * Delete by PK 
+	 * Delete by PK
 	 *
 	 * @param brandId
 	 * @return 204 deleted or 404 not found
 	 */
 	@DeleteMapping("/{brandId}")
 	protected ResponseEntity<Void> deleteById(@PathVariable Long brandId) {
-    	logger.debug("REST : DELETE - deleteById");
-		if ( service.deleteById(brandId) ) {
+		logger.debug("REST : DELETE - deleteById");
+		if (service.deleteById(brandId)) {
 			return ResponseEntity.noContent().build(); // 204 No content = "deleted"
-		}
-		else {
+		} else {
 			return ResponseEntity.notFound().build(); // 404 Not found = "not deleted"
 		}
 	}
