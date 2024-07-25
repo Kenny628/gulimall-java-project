@@ -95,7 +95,7 @@ public class PmsSkuInfoService extends GenericService<PmsSkuInfo, PmsSkuInfoDTO>
 	 */
 	public List<PmsSkuInfoDTO> findAll() {
 		logger.debug("findAll()");
-		Iterable<PmsSkuInfo> all = repository.findAll();
+		Iterable<PmsSkuInfo> all = repository.findAllWithRandom();
 		return entityListToDtoList(all);
 	}
 

@@ -52,6 +52,9 @@ public interface PmsSkuInfoRepository extends JpaRepository<PmsSkuInfo, Long> {
 	@Query(value = "select * from pms_sku_info where catalog_id=:catalog3Id", nativeQuery = true)
 	List<PmsSkuInfo> searchALLSkusByCatalog3Id(Long catalog3Id);
 
+	@Query(value = "select * from pms_sku_info ORDER BY RAND()", nativeQuery = true)
+	List<PmsSkuInfo> findAllWithRandom();
+
 	// List<PmsSkuInfo> findByXxx(String xxx);
 
 	// List<PmsSkuInfo> findByXxxStartingWith(String xxx);

@@ -200,14 +200,15 @@
               <div class="user_info_show">
                 <p class="">Hi, 欢迎来到!</p>
                 <p>
-                  <a href="/#" class="">登录</a>
-                  <a href="/#" class="">注册</a>
+                  <!-- <a href="/#" class="">登录</a>
+                  <a href="/#" class="">注册</a> -->
                 </p>
               </div>
             </div>
             <div class="user_info_hide">
-              <a href="/#">新人福利</a>
-              <a href="/#">PLUS会员</a>
+              <a th:if="${session.loginUser==null}" href="/#">登录</a>
+              <a th:if="${session.loginUser!=null}" href="/#">登入其它</a>
+              <a href="/#">注册</a>
             </div>
           </div>
           <div class="header_main_right_new">
