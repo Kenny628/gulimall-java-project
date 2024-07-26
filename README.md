@@ -42,13 +42,6 @@ Gulimall is a comprehensive e-commerce platform that provides a full suite of fe
 - RabbitMQ
 - Nginx
 - SwitchHost
-  
-### Steps
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/gulimall.git
-   cd gulimall
 
 ## Website Page Demonstration
 
@@ -57,6 +50,10 @@ Authentication page
 
 Index Page
 ![Example Image](https://github.com/Kenny628/gulimall-java-project/blob/main/image/index.png)
+
+Search Page
+![image](https://github.com/user-attachments/assets/3485a09e-7fd5-45a3-85c8-c0f5db0f11a0)
+
 Item Page
 ![image](https://github.com/user-attachments/assets/65d289dc-a61e-4449-a8b9-79229928cbf9)
 
@@ -70,11 +67,14 @@ Order Confirm Page
 ![image](https://github.com/user-attachments/assets/aa9aa2ad-4657-424d-90d2-6ce73016dd98)
 
 Payment page
-
 ![image](https://github.com/user-attachments/assets/b06c1d42-ae57-4ed9-b3e0-ae9f77ae9456)
-
 
 Stripe payment checkout page
 ![image](https://github.com/user-attachments/assets/50732c49-a2bf-467a-bef3-2bb24a8c5817)
+
+Order Details Page
+![image](https://github.com/user-attachments/assets/fdc7c310-0e7e-495d-be9a-7a88012e5c7c)
+
+
 
 
