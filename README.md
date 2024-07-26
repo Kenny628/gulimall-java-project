@@ -72,6 +72,7 @@ Order Confirm Page
 Payment page
 ![image](https://github.com/user-attachments/assets/a9517cae-3cec-481d-926e-95cdfbcd685a)
 
+![image](https://github.com/user-attachments/assets/b06c1d42-ae57-4ed9-b3e0-ae9f77ae9456)
 
 
 
