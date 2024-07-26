@@ -1,6 +1,58 @@
 Project created date: 2/5/2024
 Project GitHub pubish date: 11/5/2024
 Project Completed Date: 25/7/2024
+
+# Gulimall
+
+Gulimall is a comprehensive e-commerce platform that provides a full suite of features for online shopping, including product management, order management, payment integration, and more.
+
+## Table of Contents
+
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
+
+## Features
+
+- **Product Management**: Add, update, and manage products.
+- **Order Management**: Handle customer orders efficiently.
+- **User Authentication**: Secure login and registration.
+- **Payment Integration**: Support for multiple payment gateways.
+- **Cart Management**: Add, remove, and update cart items.
+- **Search Functionality**: Advanced product search.
+- **Admin Dashboard**: Comprehensive admin interface for managing the platform.
+
+## Tech Stack
+
+- **Backend**: Spring Boot, Spring Cloud
+- **Frontend**: Vue.js, Thymeleaf
+- **Database**: MySQL
+- **Caching**: Redis
+- **Messaging**: RabbitMQ
+- **API Gateway**: Spring Cloud Gateway
+
+## Installation
+
+### Prerequisites
+
+- Java 11 or higher
+- Node.js and npm
+- MySQL
+- Redis
+- RabbitMQ
+
+### Steps
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/gulimall.git
+   cd gulimall
+
 Index Page
 ![Example Image](https://github.com/Kenny628/gulimall-java-project/blob/main/image/index.png)
 Item Page
@@ -12,26 +64,3 @@ Added to cart Page
 Cart Page
 ![image](https://github.com/user-attachments/assets/c0bf85a2-80e9-4347-9efa-de45a9f43988)
 
-
-
-Completed job:
-MySQL databse and sql setup
-Docker (redis, ElasticSearch, kibana, nginx) setup
-Imported frontend
-Setup microservices
-Setup gateway
-Setup domain name
-Product page
-Cache for CategoryList using redis and redisson
-thye
-Configure static file (html, css, js) into nginx
-Route and load balance using gateway
-Use nacos for service management and config management
-
-Note:
-mvn install to let common project can be dependent
-Gulimall-coupun server port starts from 8100
-Gulimall-member server port starts from 8200
-Gulimall-order server port starts from 8300
-Gulimall-product server port starts from 8400
-Gulimall-ware server port starts from 8500
