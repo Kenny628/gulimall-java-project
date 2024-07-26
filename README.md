@@ -8,7 +8,7 @@ Project Completed Date: 25/7/2024
 
 Gulimall is a comprehensive e-commerce platform that provides a full suite of features for online shopping, including product management, order management, payment integration, and more.
 
-### -Project Mainly Reference: 
+### - Project Mainly Reference: 
 
 https://www.bilibili.com/video/BV1np4y1C7Yf?p=1&vd_source=dca62522f5d6a264390429dc3ab85818
 
