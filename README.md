@@ -65,6 +65,7 @@ Cart Page
 ![image](https://github.com/user-attachments/assets/c0bf85a2-80e9-4347-9efa-de45a9f43988)
 
 Order Confirm Page
-![image](https://github.com/user-attachments/assets/cdf03e05-fc11-4e0a-ab9b-168c22b15f07)
+![image](https://github.com/user-attachments/assets/aa9aa2ad-4657-424d-90d2-6ce73016dd98)
+
 
 
