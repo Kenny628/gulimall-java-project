@@ -75,4 +75,5 @@ Payment page
 ![image](https://github.com/user-attachments/assets/b06c1d42-ae57-4ed9-b3e0-ae9f77ae9456)
 
 
+![image](https://github.com/user-attachments/assets/48203b30-8fbb-4a59-92ff-9ab12bed9e3f)
 
