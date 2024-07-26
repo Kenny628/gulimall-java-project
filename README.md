@@ -19,22 +19,20 @@ Gulimall is a comprehensive e-commerce platform that provides a full suite of fe
 
 ## Features
 
-- **Product Management**: Add, update, and manage products.
-- **Order Management**: Handle customer orders efficiently.
 - **User Authentication**: Secure login and registration.
+- **Order Management**: Handle customer orders efficiently.
 - **Payment Integration**: Support for multiple payment gateways.
 - **Cart Management**: Add, remove, and update cart items.
 - **Search Functionality**: Advanced product search.
-- **Admin Dashboard**: Comprehensive admin interface for managing the platform.
 
 ## Tech Stack
 
 - **Backend**: Spring Boot, Spring Cloud
-- **Frontend**: Vue.js, Thymeleaf
+- **Frontend**: Thymeleaf
 - **Database**: MySQL
 - **Caching**: Redis
 - **Messaging**: RabbitMQ
-- **API Gateway**: Spring Cloud Gateway
+- **API Gateway**: Spring Cloud Alibaba Nacos
 
 ## Installation
 
