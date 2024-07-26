@@ -24,7 +24,6 @@ Gulimall is a comprehensive e-commerce platform that provides a full suite of fe
 - **Search Functionality**: Advanced product search.
 - **Category Navigation**: Easy navigation through product categories. (using redis caching)
 - **Payment Success Callback**: Ensure the oder status updated just after payment.
-- 
 ## Tech Stack
 
 - **Backend**: Spring Boot, Spring Cloud
