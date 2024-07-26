@@ -6,8 +6,11 @@ Index Page
 Item Page
 ![image](https://github.com/user-attachments/assets/65d289dc-a61e-4449-a8b9-79229928cbf9)
 
-Cart Page
+Added to cart Page
 ![image](https://github.com/user-attachments/assets/b9f1df95-f8ba-4a72-96a5-40245aada7fb)
+
+Cart Page
+![image](https://github.com/user-attachments/assets/defe1cd4-5f36-4a3b-ab96-995c119f1640)
 
 
 Completed job:
