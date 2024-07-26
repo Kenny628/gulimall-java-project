@@ -48,6 +48,11 @@ Gulimall is a comprehensive e-commerce platform that provides a full suite of fe
    git clone https://github.com/yourusername/gulimall.git
    cd gulimall
 
+## Website Page demonstration
+
+Authentication page
+![image](https://github.com/user-attachments/assets/f86c6285-fea3-4334-976c-56180877d5c8)
+
 Index Page
 ![Example Image](https://github.com/Kenny628/gulimall-java-project/blob/main/image/index.png)
 Item Page
