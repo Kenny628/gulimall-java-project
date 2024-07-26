@@ -69,5 +69,9 @@ Cart Page
 Order Confirm Page
 ![image](https://github.com/user-attachments/assets/aa9aa2ad-4657-424d-90d2-6ce73016dd98)
 
+Payment page
+![image](https://github.com/user-attachments/assets/a9517cae-3cec-481d-926e-95cdfbcd685a)
+
+
 
 
