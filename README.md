@@ -10,7 +10,8 @@ Added to cart Page
 ![image](https://github.com/user-attachments/assets/b9f1df95-f8ba-4a72-96a5-40245aada7fb)
 
 Cart Page
-![image](https://github.com/user-attachments/assets/defe1cd4-5f36-4a3b-ab96-995c119f1640)
+![image](https://github.com/user-attachments/assets/c0bf85a2-80e9-4347-9efa-de45a9f43988)
+
 
 
 Completed job:
