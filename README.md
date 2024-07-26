@@ -70,10 +70,11 @@ Order Confirm Page
 ![image](https://github.com/user-attachments/assets/aa9aa2ad-4657-424d-90d2-6ce73016dd98)
 
 Payment page
-![image](https://github.com/user-attachments/assets/a9517cae-3cec-481d-926e-95cdfbcd685a)
 
 ![image](https://github.com/user-attachments/assets/b06c1d42-ae57-4ed9-b3e0-ae9f77ae9456)
 
 
-![image](https://github.com/user-attachments/assets/48203b30-8fbb-4a59-92ff-9ab12bed9e3f)
+Stripe payment checkout page
+![image](https://github.com/user-attachments/assets/50732c49-a2bf-467a-bef3-2bb24a8c5817)
+
 
