@@ -13,7 +13,7 @@ Gulimall is a comprehensive e-commerce platform that provides a full suite of fe
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Prerequisites](#Prerequisites)
-- [Website Page Demonstration](#Website Page Demonstration)
+- [Website Page Demonstration](#wbsite-page-demonstration)
 ## Main Features
 
 - **User Authentication**: Secure login and registration. (manual registration and social login)
