@@ -10,21 +10,18 @@ Gulimall is a comprehensive e-commerce platform that provides a full suite of fe
 
 - [Features](#features)
 - [Tech Stack](#tech-stack)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
+- [Prerequisites](#Prerequisites)
 
 ## Features
 
-- **User Authentication**: Secure login and registration.
-- **Order Management**: Handle customer orders efficiently.
+- **User Authentication**: Secure login and registration. (manual registration and social login)
+- **Order Management**: Handle customer orders efficiently. (rabbitMQ for order release)
+- **Stock Management**: Real-time stock updates and inventory management. (rabbitMQ for stock release)
 - **Payment Integration**: Support for multiple payment gateways.
-- **Cart Management**: Add, remove, and update cart items.
+- **Cart Management**: Add, remove, and update cart items. (using redis)
 - **Search Functionality**: Advanced product search.
-
+- **Messaging**: RabbitMQ for order release and stock release processes.
+  
 ## Tech Stack
 
 - **Backend**: Spring Boot, Spring Cloud
@@ -34,16 +31,16 @@ Gulimall is a comprehensive e-commerce platform that provides a full suite of fe
 - **Messaging**: RabbitMQ
 - **API Gateway**: Spring Cloud Alibaba Nacos
 
-## Installation
-
-### Prerequisites
+## Prerequisites
 
 - Java 11 or higher
 - Node.js and npm
 - MySQL
 - Redis
 - RabbitMQ
-
+- Nginx
+- SwitchHost
+  
 ### Steps
 
 1. Clone the repository:
