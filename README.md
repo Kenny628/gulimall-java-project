@@ -7,7 +7,8 @@ Item Page
 ![image](https://github.com/user-attachments/assets/65d289dc-a61e-4449-a8b9-79229928cbf9)
 
 Cart Page
-![image](https://github.com/user-attachments/assets/2c6ae79b-6134-47bb-a652-b5f6783aa6de)
+![image](https://github.com/user-attachments/assets/b9f1df95-f8ba-4a72-96a5-40245aada7fb)
+
 
 Completed job:
 MySQL databse and sql setup
