@@ -30,7 +30,9 @@ Gulimall is a comprehensive e-commerce platform that provides a full suite of fe
 - **Caching**: Redis
 - **Messaging**: RabbitMQ
 - **API Gateway**: Spring Cloud Alibaba Nacos
-
+- **Web Server**: nginx
+- **Reverse Proxy**: ngrok
+  
 ## Prerequisites
 
 - Java 11 or higher
