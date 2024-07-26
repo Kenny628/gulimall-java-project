@@ -15,12 +15,12 @@ Gulimall is a comprehensive e-commerce platform that provides a full suite of fe
 ## Main Features
 
 - **User Authentication**: Secure login and registration. (manual registration and social login)
-- **Order Management**: Handle customer orders efficiently. (rabbitMQ for order release)
+- **Order Management**: Handle customer orders efficiently. (rabbitMQ for order release, redis for token management)
 - **Stock Management**: Real-time stock updates and inventory management. (rabbitMQ for stock release)
 - **Payment Integration**: Support for multiple payment gateways.
 - **Cart Management**: Add, remove, and update cart items. (using redis)
 - **Search Functionality**: Advanced product search.
-- **Messaging**: RabbitMQ for order release and stock release processes.
+- **Category Navigation**: Easy navigation through product categories. (using redis caching)
   
 ## Tech Stack
 
