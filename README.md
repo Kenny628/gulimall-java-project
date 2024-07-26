@@ -38,7 +38,7 @@ Gulimall is a comprehensive e-commerce platform that provides a full suite of fe
   
 ## Prerequisites
 
-- Java 11 or higher
+- Java 17 or higher
 - MySQL
 - Redis
 - RabbitMQ
